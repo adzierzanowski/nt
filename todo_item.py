@@ -16,7 +16,10 @@ class TodoItem:
     if self.due_date is None:
       due = ''
     else:
-      due = 'due: \033[38;5;2m'
+      if dt.now() < self.due_date:
+        due = 'due: \033[38;5;2m'
+      else:
+        due = 'due: \033[38;5;1m'
       due += self.due_date.strftime(Constants.date_fmt)
       due += '\033[0m'
 

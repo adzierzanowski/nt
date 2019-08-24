@@ -30,7 +30,7 @@ def main():
   complete_subparser = subparsers.add_parser('complete', aliases=['c'])
   uncomplete_subparser = subparsers.add_parser('uncomplete', aliases=['u'])
 
-  add_subparser.add_argument('content', help='content')
+  add_subparser.add_argument('content', help='content', nargs='+')
   add_subparser.add_argument('-d', '--due', help='due date', type=str)
   add_subparser.add_argument('-p', '--priority', help='priority', type=int)
 
@@ -46,9 +46,16 @@ def main():
 
   ls_subparser.add_argument('args', help='arguments', type=str, nargs='*')
   ls_subparser.add_argument(
+    '--due', '-d', help='sort by due date', action='store_true')
+  ls_subparser.add_argument(
     '--priority', '-p', help='sort by priority', action='store_true')
   ls_subparser.add_argument(
-    '-u', '--uncompleted', help='show only uncompleted', action='store_true')
+    '--all', '-a', help='show all', action='store_true')
+  ls_subparser.add_argument(
+    '--completed', '-c', help='show only completed', action='store_true')
+  ls_subparser.add_argument(
+    '--uncompleted', '-u',
+    help='show only uncompleted', action='store_false')
 
   args = parser.parse_args()
 
@@ -63,10 +70,24 @@ def main():
   todo_list = TodoList.from_file(Constants.list_fname)
 
   if args.cmd in ['a', 'add']:
-    due = None if args.due is None else dt.strptime(args.due, Constants.date_fmt)
+    if args.due:
+      for fmt in Constants.date_fmts:
+        try:
+          due = dt.strptime(args.due, fmt)
+          break
+        except ValueError:
+          due = None
+    else:
+      due = None
+
+    if due:
+      now = dt.now()
+      if due.year == 1900:
+        due = due.replace(year=now.year)
+
     item = TodoItem(
       todo_list.max_id+1,
-      args.content,
+      ' '.join(args.content),
       due,
       args.priority)
     todo_list.add_item(item)
@@ -95,14 +116,22 @@ def main():
       exit(1)
 
   if args.cmd in ['l', 'ls']:
-    if args.priority:
-      items = sorted(todo_list.items,
-        key=lambda m: 0 if m.priority is None else -m.priority)
-    else:
-      items = todo_list.items
+    items = todo_list.items
 
-    if args.uncompleted:
-      items = [item for item in items if not item.completed]
+    if args.priority:
+      items = sorted(items,
+        key=lambda m: 0 if m.priority is None else -m.priority)
+    
+    if args.due:
+      items = sorted(items,
+      key=lambda m: dt(1900, 1, 1) if m.due_date is None else m.due_date,
+      reverse=True)
+
+    if not args.all:
+      if args.completed:
+        items = [item for item in items if item.completed]
+      elif args.uncompleted:
+        items = [item for item in items if not item.completed]
 
     for arg in args.args:
       items = [item for item in items if arg in item.content]
