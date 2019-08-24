@@ -36,7 +36,7 @@ class TodoItem:
         content[i] = '\033[38;5;5m' + word + '\033[38;5;7m'
 
       elif word.startswith('#'):
-        content[i] = '\033[38;5;6m' + word + '\033[38;5;7mm'
+        content[i] = '\033[38;5;6m' + word + '\033[38;5;7m'
 
     content = '\033[38;5;7m' + ' '.join(content) + '\033[0m'
 
