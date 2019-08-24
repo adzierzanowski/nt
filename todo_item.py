@@ -12,11 +12,37 @@ class TodoItem:
 
   def __str__(self):
     completed = 'x' if self.completed else ' '
-    due = '' if self.due_date is None else 'due: \033[38;5;2m' + self.due_date.strftime(Constants.date_fmt) + '\033[0m'
-    priority = '' if self.priority is None else 'priority: \033[38;5;3m' + str(self.priority) + '\033[0m'
+
+    if self.due_date is None:
+      due = ''
+    else:
+      due = 'due: \033[38;5;2m'
+      due += self.due_date.strftime(Constants.date_fmt)
+      due += '\033[0m'
+
+    if self.priority is None:
+      priority = ''
+    else:
+      priority = '\033[38;5;3m'
+      priority += str(self.priority)
+      priority += '\033[0m'
+
+    content = self.content.split(' ')
+    for i, word in enumerate(content):
+      if word.startswith('@'):
+        content[i] = '\033[38;5;1m' + word + '\033[0m'
+
+      elif word.startswith('+'):
+        content[i] = '\033[38;5;5m' + word + '\033[0m'
+
+      elif word.startswith('#'):
+        content[i] = '\033[38;5;6m' + word + '\033[0m'
+
+    content = ' '.join(content)
+
     return '\033[38;5;4m{:4}\033[0m [{}]    {} {}\n     {}'.format(
-      self.id, completed, due, priority, self.content)
-    
+      self.id, completed, due, priority, content)
+
   @staticmethod
   def from_json(data):
     item = TodoItem(

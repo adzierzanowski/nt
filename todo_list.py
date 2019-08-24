@@ -28,7 +28,7 @@ class TodoList:
         todo_list.items.append(item)
         if item.id > todo_list.max_id:
           todo_list.max_id = item.id
-      
+
       return todo_list
 
     except FileNotFoundError:
@@ -36,12 +36,12 @@ class TodoList:
       print('init list with `nt init`')
       exit(1)
 
-  def to_file(self):
-    if os.path.exists(Constants.list_fname):
+  def to_file(self, force=False):
+    if os.path.exists(Constants.list_fname) or force:
       with open(Constants.list_fname, 'w') as f:
         f.write(self.to_json())
     else:
-      print('{} not found', Constants.list_fname)
+      print('{} not found'.format(Constants.list_fname))
       print('init list with `nt init`')
 
   def to_json(self):

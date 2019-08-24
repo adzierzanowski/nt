@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import json
 import argparse
 from datetime import datetime as dt
 
@@ -13,18 +12,19 @@ def init():
     if os.path.exists(Constants.list_fname):
       print('.todo.json already exists')
       print('remove it first with `nt rm list`')
+      exit(1)
 
-    with open(Constants.list_fname, 'w') as f:
-      todo_list = TodoList()
-      todo_list.to_file()
-      print('successfully created {}'.format(Constants.list_fname))
+    todo_list = TodoList()
+    todo_list.to_file(force=True)
+    print('successfully created {}'.format(Constants.list_fname))
 
 def main():
   parser = argparse.ArgumentParser('nt')
 
   subparsers = parser.add_subparsers(dest='cmd')
-  init_subparser = subparsers.add_parser('init')
+  subparsers.add_parser('init')
   add_subparser = subparsers.add_parser('add', aliases=['a'])
+  edit_subparser = subparsers.add_parser('edit', aliases=['e'])
   rm_subparser = subparsers.add_parser('rm', aliases=['r', 'd'])
   ls_subparser = subparsers.add_parser('ls', aliases=['l'])
   complete_subparser = subparsers.add_parser('complete', aliases=['c'])
@@ -34,13 +34,21 @@ def main():
   add_subparser.add_argument('-d', '--due', help='due date', type=str)
   add_subparser.add_argument('-p', '--priority', help='priority', type=int)
 
+  edit_subparser.add_argument('id', help='id', type=int)
+  edit_subparser.add_argument('-c', '--content', help='content', type=str)
+  edit_subparser.add_argument('-d', '--due', help='due date', type=str)
+  edit_subparser.add_argument('-p', '--priority', help='priority', type=int)
+
   rm_subparser.add_argument('id', help='item id', type=str)
 
   complete_subparser.add_argument('id', help='item id', type=int)
   uncomplete_subparser.add_argument('id', help='item id', type=int)
 
+  ls_subparser.add_argument('args', help='arguments', type=str, nargs='*')
+  ls_subparser.add_argument(
+    '--priority', '-p', help='sort by priority', action='store_true')
+
   args = parser.parse_args()
-  print(args)
 
   if args.cmd is None:
     parser.print_usage()
@@ -53,7 +61,7 @@ def main():
   todo_list = TodoList.from_file(Constants.list_fname)
 
   if args.cmd in ['a', 'add']:
-    due = None if args.due is None else dt.strptime(args.due, '%d.%m.%Y %H:%M:%S')
+    due = None if args.due is None else dt.strptime(args.due, Constants.date_fmt)
     item = TodoItem(
       todo_list.max_id+1,
       args.content,
@@ -63,8 +71,38 @@ def main():
     todo_list.to_file()
     exit(0)
 
+  if args.cmd in ['e', 'edit']:
+    found = False
+    for i, item in enumerate(todo_list.items):
+      if item.id == args.id:
+        found = True
+
+        if args.content:
+          todo_list.items[i].content = args.content
+        if args.priority:
+          todo_list.items[i].priority = args.priority
+        if args.due:
+          todo_list.items[i].due_date = dt.strptime(args.due, Constants.date_fmt)
+        
+        todo_list.to_file()
+    
+    if found:
+      exit(0)
+    else:
+      print('no such item')
+      exit(1)
+
   if args.cmd in ['l', 'ls']:
-    for item in todo_list.items:
+    if args.priority:
+      items = sorted(todo_list.items,
+        key=lambda m: 0 if m.priority is None else -m.priority)
+    else:
+      items = todo_list.items
+
+    for arg in args.args:
+      items = [item for item in items if arg in item.content]
+
+    for item in items:
       print(item)
 
   if args.cmd in ['r', 'd', 'rm']:
@@ -76,32 +114,34 @@ def main():
         print('successfully removed the list')
     else:
       id_ = int(args.id)
-      print('here will be item removal')
+      todo_list.items = [item for item in todo_list.items if item.id != id_]
+      todo_list.to_file()
+      print('item removed')
     exit(0)
 
   if args.cmd in ['complete', 'c']:
     items = [i for i in todo_list.items if i.id == args.id]
-    if len(items) == 0:
-      print('no such item')
-      exit(0)
-    else:
+    if items:
       item = items[0]
       item.completed = True
       print(item)
       todo_list.to_file()
       exit(0)
+    else:
+      print('no such item')
+      exit(1)
 
   if args.cmd in ['uncomplete', 'u']:
     items = [i for i in todo_list.items if i.id == args.id]
-    if len(items) == 0:
-      print('no such item')
-      exit(0)
-    else:
+    if items:
       item = items[0]
       item.completed = False
       print(item)
       todo_list.to_file()
       exit(0)
+    else:
+      print('no such item')
+      exit(1)
 
 if __name__ == '__main__':
   main()
