@@ -10,15 +10,12 @@ class TodoItem:
     self.priority = priority
     self.completed = completed
 
-  def __repr__(self):
-    return str(self)
-
   def __str__(self):
     completed = 'x' if self.completed else ' '
-    due = '' if self.due_date is None else self.due_date.strftime(Constants.date_fmt)
-    priority = '' if self.priority is None else self.priority
-    return '{:4} [{}] {:40} {:20} {}'.format(
-      self.id, completed, self.content, due, priority)
+    due = '' if self.due_date is None else 'due: \033[38;5;2m' + self.due_date.strftime(Constants.date_fmt) + '\033[0m'
+    priority = '' if self.priority is None else 'priority: \033[38;5;3m' + str(self.priority) + '\033[0m'
+    return '\033[38;5;4m{:4}\033[0m [{}]    {} {}\n     {}'.format(
+      self.id, completed, due, priority, self.content)
     
   @staticmethod
   def from_json(data):

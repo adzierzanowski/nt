@@ -32,8 +32,9 @@ class TodoList:
       return todo_list
 
     except FileNotFoundError:
-      print('{} not found', Constants.list_fname)
+      print('{} not found'.format(Constants.list_fname))
       print('init list with `nt init`')
+      exit(1)
 
   def to_file(self):
     if os.path.exists(Constants.list_fname):
