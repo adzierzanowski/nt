@@ -23,24 +23,24 @@ class TodoItem:
     if self.priority is None:
       priority = ''
     else:
-      priority = '\033[38;5;3m'
+      priority = 'priority: \033[38;5;3m'
       priority += str(self.priority)
       priority += '\033[0m'
 
     content = self.content.split(' ')
     for i, word in enumerate(content):
       if word.startswith('@'):
-        content[i] = '\033[38;5;1m' + word + '\033[0m'
+        content[i] = '\033[38;5;1m' + word + '\033[38;5;7m'
 
       elif word.startswith('+'):
-        content[i] = '\033[38;5;5m' + word + '\033[0m'
+        content[i] = '\033[38;5;5m' + word + '\033[38;5;7m'
 
       elif word.startswith('#'):
-        content[i] = '\033[38;5;6m' + word + '\033[0m'
+        content[i] = '\033[38;5;6m' + word + '\033[38;5;7mm'
 
-    content = ' '.join(content)
+    content = '\033[38;5;7m' + ' '.join(content) + '\033[0m'
 
-    return '\033[38;5;4m{:4}\033[0m [{}]    {} {}\n     {}'.format(
+    return '\033[38;5;4m{:4}\033[0m [{}]    {}    {}\n     {}\n'.format(
       self.id, completed, due, priority, content)
 
   @staticmethod

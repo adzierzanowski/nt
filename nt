@@ -47,6 +47,8 @@ def main():
   ls_subparser.add_argument('args', help='arguments', type=str, nargs='*')
   ls_subparser.add_argument(
     '--priority', '-p', help='sort by priority', action='store_true')
+  ls_subparser.add_argument(
+    '-u', '--uncompleted', help='show only uncompleted', action='store_true')
 
   args = parser.parse_args()
 
@@ -98,6 +100,9 @@ def main():
         key=lambda m: 0 if m.priority is None else -m.priority)
     else:
       items = todo_list.items
+
+    if args.uncompleted:
+      items = [item for item in items if not item.completed]
 
     for arg in args.args:
       items = [item for item in items if arg in item.content]
