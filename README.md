@@ -62,6 +62,10 @@ edit `~/.ntrc` to change the editor) to edit passed parameters.
 
 Same goes with `e[dit]` command.
 
+### Some more workflow examples
+
+[![asciicast](https://asciinema.org/a/AzMcet2kVExAoxHtKhngTob5n.svg)](https://asciinema.org/a/AzMcet2kVExAoxHtKhngTob5n)
+
 ## ~/.ntrc
 
     editor=nvim
