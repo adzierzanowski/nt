@@ -1,3 +1,8 @@
+'''
+setup.py allows to install this package with pip
+$ pip3 install . [--upgrade]
+'''
+
 from setuptools import setup
 from src.nt.meta import __version__, __progname__
 

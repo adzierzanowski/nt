@@ -1,4 +1,7 @@
+'''This module handles most of the program's behavior.'''
+
 import os
+import sys
 import json
 import subprocess
 from datetime import datetime as dt
@@ -7,8 +10,11 @@ from datetime import timedelta
 from .todo_item import TodoItem
 from .todo_list_config import TodoListConfig
 from .constants import Constants
+from .meta import __progname__
 
 class TodoList:
+  '''TodoList represents, wait for it... a todo list.'''
+
   def __init__(self):
     self.config = TodoListConfig()
     self.items = []
@@ -16,9 +22,13 @@ class TodoList:
 
   @staticmethod
   def init():
+    '''Initializes a list in the current directory. If a list exists, then it
+    prints appropriate message to stderr and quits.'''
+
     if os.path.exists(Constants.list_fname):
-      print('{} already exists'.format(Constants.list_fname))
-      print('remove it first with `nt rm list`')
+      print('{} already exists'.format(Constants.list_fname), file=sys.stderr)
+      print('remove it first with `{} rm list`'.format(__progname__),
+        file=sys.stderr)
       exit(1)
 
     todo_list = TodoList()
@@ -27,6 +37,8 @@ class TodoList:
 
   @staticmethod
   def from_file(fname):
+    '''Returns an instance of TodoList based on data from a file.'''
+
     todo_list = TodoList()
     try:
       with open(fname, 'r') as f:
@@ -47,17 +59,23 @@ class TodoList:
 
   @staticmethod
   def parse_date(due_):
+    '''Returns a datetime.datetime instance based on an input string.'''
+
     if due_:
       for fmt in Constants.date_fmts:
         try:
           due = dt.strptime(due_, fmt)
           break
         except ValueError:
-          weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+          weekdays = ('mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun')
 
           if due_.lower() in weekdays:
             timeptr = dt.now() + timedelta(days=1)
-            while timeptr.weekday() != weekdays.index(due_) and timeptr - dt.now() < timedelta(days=8):
+            while all([
+              timeptr.weekday() != weekdays.index(due_),
+              timeptr - dt.now() < timedelta(days=8)
+            ]):
+
               timeptr += timedelta(days=1)
             due = timeptr
 
@@ -74,15 +92,22 @@ class TodoList:
     return due
 
   def get_item(self, id_):
+    '''Returs a tuple (index, item) from list of items belonging to the list
+    based on an item id. If the item is not found, it returns (-1, None).'''
+
     for index, item in enumerate(self.items):
       if item.id == id_:
         return index, item
     return -1, None
 
   def add_todo_item(self, item):
+    '''Appends a TodoItem to the list's item list.'''
+
     self.items.append(item)
 
   def add_item(self, due_, content_, priority_):
+    '''Adds an item to the list based on certain parameters.'''
+
     due = TodoList.parse_date(due_)
 
     item = TodoItem(
@@ -96,6 +121,8 @@ class TodoList:
     print(item)
 
   def edit_item(self, id_, content_, due_, priority_):
+    '''Updates TodoItem's fields.'''
+
     i, item = self.get_item(id_)
     if item:
         if content_:
@@ -111,6 +138,8 @@ class TodoList:
     return False
 
   def set_completeness(self, id_, complete):
+    '''Marks an item as completed (or not).'''
+
     i, item = self.get_item(id_)
     if item:
       self.items[i].completed = complete
@@ -129,6 +158,8 @@ class TodoList:
     args=None,
     less=False,
     by_prefix=None):
+    '''Lists items from the list.'''
+
     items = self.items
 
     if priority:
@@ -184,7 +215,7 @@ class TodoList:
     else:
       for item in items:
         out += str(item) + '\n'
-    
+
     if less:
       with open(Constants.less_tmp_fname, 'w') as f:
         f.write(out)
@@ -194,6 +225,8 @@ class TodoList:
       print(out)
 
   def to_file(self, force=False):
+    '''Saves the current state of the list to a file.'''
+
     if os.path.exists(Constants.list_fname) or force:
       with open(Constants.list_fname, 'w') as f:
         f.write(self.to_json())
@@ -202,6 +235,8 @@ class TodoList:
       print('init list with `nt init`')
 
   def to_json(self):
+    '''Returns a JSON representation of the class' data.'''
+
     data = {
       'config': self.config.to_dict(),
       'items': [item.to_dict() for item in self.items]

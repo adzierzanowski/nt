@@ -76,15 +76,34 @@ def main():
     exit(1)
     
   # cmd:add
-  if args.cmd in ['a', 'add']:
+  if args.cmd in ('a', 'add'):
     if args.content:
       todo_list.add_item(args.due, args.content, args.priority)
     else:
       edit_command('add')
     exit(0)
 
+  # cmd:cfg
+  if args.cmd in ('cfg', 'config'):
+    if args.add_prefix:
+      if any([not args.name, not args.color]):
+        print('-n, and -c switches are required when adding a prefix',
+          file=sys.stderr)
+        exit(1)
+      todo_list.config.add_prefix(args.add_prefix, args.name, args.color)
+      todo_list.to_file()
+      exit(0)
+
+    elif args.remove_prefix:
+      todo_list.config.remove_prefix(args.remove_prefix)
+      todo_list.to_file()
+      exit(0)
+
+    else:
+      todo_list.config.dump()
+
   # cmd:edit
-  if args.cmd in ['e', 'edit']:
+  if args.cmd in ('e', 'edit'):
     if any([args.content, args.due, args.priority]):
       if todo_list.edit_item(args.id, args.content, args.due, args.priority):
         exit(0)
@@ -108,7 +127,7 @@ def main():
     exit(0)
 
   # cmd:ls
-  if args.cmd in ['l', 'ls']:
+  if args.cmd in ('l', 'ls'):
     todo_list.list_items(
       priority=args.priority,
       due=args.due,
@@ -122,7 +141,7 @@ def main():
     exit(0)
 
   # cmd:rm
-  if args.cmd in ['r', 'd', 'rm']:
+  if args.cmd in ('r', 'd', 'rm'):
     if args.id == 'list':
       print('are you sure you want to delete the whole list? [y/n]', end=' ')
       yesno = input()
@@ -137,7 +156,7 @@ def main():
     exit(0)
 
   # cmd:complete
-  if args.cmd in ['complete', 'c']:
+  if args.cmd in ('complete', 'c'):
     if todo_list.set_completeness(args.id, True):
       exit(0)
     else:
@@ -145,7 +164,7 @@ def main():
       exit(1)
 
   # cmd:uncomplete
-  if args.cmd in ['uncomplete', 'u']:
+  if args.cmd in ('uncomplete', 'u'):
     if todo_list.set_completeness(args.id, False):
       exit(0)
     else:

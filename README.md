@@ -33,15 +33,19 @@ you can change it to some lame editor.
 
 ## Installation
 
+```bash
     $ git clone https://github.com/adzierzanowski/nt.git
     $ cd nt
     $ pip3 install .
+```
 
 ## Usage
 
 Type
 
+```bash
     $ nt
+```
 
 to get all uncompleted items piped to `less`.
 
@@ -68,10 +72,12 @@ Same goes with `e[dit]` command.
 
 ## ~/.ntrc
 
+```ini
     editor=nvim
     list_fname=.todo.json
     date_fmt=%d.%m.%y %H:%M
     date_fmt=%m-%d
+```
 
 ## TODO
 

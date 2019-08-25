@@ -1,13 +1,19 @@
+'''This module parses command line arguments.'''
+
 import argparse
 
 from .meta import __progname__
 
 def parse_args():
+  '''Define and parse command line arguments.
+  Returns a tuple (parser, args)'''
+
   parser = argparse.ArgumentParser(__progname__)
 
   subparsers = parser.add_subparsers(dest='cmd')
   subparsers.add_parser('init')
   add_subparser = subparsers.add_parser('add', aliases=['a'])
+  cfg_subparser = subparsers.add_parser('config', aliases=['cfg'])
   edit_subparser = subparsers.add_parser('edit', aliases=['e'])
   rm_subparser = subparsers.add_parser('rm', aliases=['r', 'd'])
   ls_subparser = subparsers.add_parser('ls', aliases=['l'])
@@ -20,6 +26,15 @@ def parse_args():
   add_subparser.add_argument('content', help='content', nargs='*')
   add_subparser.add_argument('-d', '--due', help='due date', type=str)
   add_subparser.add_argument('-p', '--priority', help='priority', type=int)
+
+  cfg_subparser.add_argument(
+    '-a', '--add-prefix', help='add a new prefix', type=str, metavar='SYMBOL')
+  cfg_subparser.add_argument(
+    '-c', '--color', type=int, metavar='N', help='color number')
+  cfg_subparser.add_argument(
+    '-n', '--name', help='prefix name', metavar='NAME', type=str)
+  cfg_subparser.add_argument(
+    '-r', '--remove-prefix', type=str, metavar='SYMBOL')
 
   edit_subparser.add_argument('id', help='id', type=int)
   edit_subparser.add_argument('-c', '--content', help='content', type=str)

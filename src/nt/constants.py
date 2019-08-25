@@ -1,4 +1,8 @@
+'''Runtime configuration.'''
+
 class Constants:
+  '''Some of these values are overriden when an ~/.ntrc file exists'''
+
   list_fname = '.todo.json'
   date_fmt = '%d.%m.%y %H:%M'
   date_fmts = [

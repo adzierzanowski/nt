@@ -1,8 +1,13 @@
+'''This module handles single todo list items.'''
+
 from datetime import datetime as dt
 
 from .constants import Constants
+from .fmt import Fmt
 
 class TodoItem:
+  '''TodoItem is a direct mapping of JSON data.'''
+
   def __init__(self, parent, id_, content, due_date, priority, completed=False):
     self.parent = parent
     self.id = id_
@@ -18,47 +23,61 @@ class TodoItem:
       due = ''
     else:
       if dt.now() < self.due_date:
-        due = 'due: \033[38;5;2m'
+        due = 'due: {}'.format(Fmt.fg(2))
       else:
-        due = 'due: \033[38;5;1m'
+        due = 'due: {}'.format(Fmt.fg(1))
       due += self.due_date.strftime(Constants.date_fmt)
-      due += '\033[0m'
+      due += Fmt.end()
 
     if self.priority is None:
       priority = ''
     else:
-      priority = 'priority: \033[38;5;3m'
+      priority = 'priority: {}'.format(Fmt.fg(3))
       priority += str(self.priority)
-      priority += '\033[0m'
+      priority += Fmt.end()
 
     content = self.content.split(' ')
     for i, word in enumerate(content):
       for prefix, prefix_data in self.parent.config.prefixes.items():
         if word.startswith(prefix):
-          content[i] = '\033[38;5;{}m'.format(prefix_data['color'])
+          content[i] = Fmt.fg(prefix_data['color'])
           content[i] += word
-          content[i] += '\033[38;5;7m'
+          content[i] += Fmt.fg(7)
           continue
 
-    content = '\033[38;5;7m' + ' '.join(content) + '\033[0m'
+    content = '{}{}{}'.format(Fmt.fg(7), ' '.join(content), Fmt.end())
 
-    return '\033[38;5;4m{:4}\033[0m [{}]    {:20}    {:20}\n     {}\n'.format(
-      self.id, completed, priority, due, content)
+    return '{}{:4}{} [{}]    {:20}    {:20}\n     {}\n'.format(
+      Fmt.fg(4), self.id, Fmt.end(), completed, priority, due, content)
 
   @staticmethod
   def from_json(parent, data):
+    '''Returns a TodoItem from JSON data. The first argument specifies a
+    TodoList to which the TodoItem belongs.'''
+
+    if data['due_date'] is None:
+      due = None
+    else:
+      due = dt.strptime(data['due_date'], Constants.date_fmt)
+
     item = TodoItem(
       parent,
       data['id'],
       data['content'],
-      None if data['due_date'] is None else dt.strptime(data['due_date'], Constants.date_fmt),
+      due,
       data['priority'],
       data['completed']
     )
     return item
 
   def to_dict(self):
-    due = None if self.due_date is None else self.due_date.strftime(Constants.date_fmt)
+    '''Returns a dict representation of the class.'''
+
+    if self.due_date is None:
+      due = None
+    else:
+      due = self.due_date.strftime(Constants.date_fmt)
+
     data = {
       'id': self.id,
       'content': self.content,
@@ -69,6 +88,9 @@ class TodoItem:
     return data
 
   def get_prefixes(self, prefix):
+    '''Returns a list of words in TodoItem content that begins with a
+    certain prefix.'''
+
     prefixes = []
     for word in self.content.split(' '):
       if word.startswith(prefix):
