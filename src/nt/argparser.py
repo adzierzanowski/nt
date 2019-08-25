@@ -33,19 +33,19 @@ def parse_args():
 
   ls_subparser.add_argument('args', help='arguments', type=str, nargs='*')
   ls_subparser.add_argument(
-    '--all', '-a', help='show all', action='store_true')
+    '-a', '--all', help='show all', action='store_true')
   ls_subparser.add_argument(
     '-b', '--by-prefix', help='group by prefix', type=str)
   ls_subparser.add_argument(
-    '--completed', '-c', help='show only completed', action='store_true')
+    '-c', '--completed', help='show only completed', action='store_true')
   ls_subparser.add_argument(
-    '--due', '-d', help='sort by due date', action='store_true')
+    '-d', '--due', help='sort by due date', action='store_true')
   ls_subparser.add_argument(
     '-l', '--less', help='pipe the output to less', action='store_true')
   ls_subparser.add_argument(
-    '--priority', '-p', help='sort by priority', action='store_true')
+    '-p', '--priority', help='sort by priority', action='store_true')
   ls_subparser.add_argument(
-    '--uncompleted', '-u',
+    '-u', '--uncompleted',
     help='show only uncompleted', action='store_false')
 
   args = parser.parse_args()
