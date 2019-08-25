@@ -5,30 +5,31 @@
 
 ## FAQ
 
-**Why?**
+### Why?
 
 None of todo-list suited my needs. So here's another! Yay!
 
 By the way, it's pretty interesting that it's so hard to make such a simple
 piece of software good.
 
-**Why `nt`?**
+### Why `nt`?
 
 Because it is easy to type and is not associated with any unix utility
 (at least not with one that I heard of).
 
-**Is it good?**
+### Is it good?
 
 It's good for me.
 
-**How is it different?**
+### How is it different?
 
 * Configurable prefixes per list. Default are `@context`, `#tag` and `+project`.
 * It requires less typing.
 * It provides git-like command editing in a text editor of your choice.
-* It's dead simple and small and depends on nothing outside standard Python3
-and widely-used unix utilities (namely `neovim` and `less`). And you're not
-limited to `neovim`, you can change it to some lame editor.
+* It's dead simple and small
+* It depends on nothing beyond standard Python3 and widely-used unix
+utilities (namely `neovim` and `less`). And you're not limited to `neovim`,
+you can change it to some lame editor.
 
 ## Installation
 
@@ -65,10 +66,17 @@ Same goes with `e[dit]` command.
 
     editor=nvim
     list_fname=.todo.json
+    date_fmt=%d.%m.%y %H:%M
+    date_fmt=%m-%d
 
 ## TODO
 
 * Better due date parsing.
+* Make items print equally (now the len func takes escape codes into account
+and breaks the layout)
+* Error handling is poor now.
+* Improve sorting by due date.
+* Tests.
 
 ## zsh completions
 

@@ -37,6 +37,7 @@ def parse_rcfile():
       data = f.read()
     
     data = data.splitlines()
+    date_fmt_cnt = 0
     for line in data:
       l = line.split('=')
 
@@ -45,6 +46,12 @@ def parse_rcfile():
 
       elif l[0] == 'list_fname':
         Constants.list_fname = l[1]
+      
+      elif l[0] == 'date_fmt':
+        date_fmt_cnt += 1
+        if date_fmt_cnt == 1:
+          Constants.date_fmt = l[1]
+        Constants.date_fmts += l[1]
 
 def main():
   args, parser = parse_args()

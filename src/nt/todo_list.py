@@ -2,6 +2,7 @@ import os
 import json
 import subprocess
 from datetime import datetime as dt
+from datetime import timedelta
 
 from .todo_item import TodoItem
 from .todo_list_config import TodoListConfig
@@ -52,7 +53,16 @@ class TodoList:
           due = dt.strptime(due_, fmt)
           break
         except ValueError:
-          due = None
+          weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+
+          if due_.lower() in weekdays:
+            timeptr = dt.now() + timedelta(days=1)
+            while timeptr.weekday() != weekdays.index(due_) and timeptr - dt.now() < timedelta(days=8):
+              timeptr += timedelta(days=1)
+            due = timeptr
+
+          else:
+            due = None
     else:
       due = None
 
@@ -163,13 +173,14 @@ class TodoList:
           prefix_name = by_prefix
           group_name = group
 
-        out += '{}: \033[38;5;{}m{}{}\033[0m\n'.format(
-          self.config.prefixes[by_prefix]['name'],
-          self.config.prefixes[by_prefix]['color'],
-          prefix_name,
-          group_name)
-        for item in items:
-          out += str(item) + '\n'
+        if items:
+          out += '{}: \033[38;5;{}m{}{}\033[0m\n'.format(
+            self.config.prefixes[by_prefix]['name'],
+            self.config.prefixes[by_prefix]['color'],
+            prefix_name,
+            group_name)
+          for item in items:
+            out += str(item) + '\n'
     else:
       for item in items:
         out += str(item) + '\n'
@@ -178,6 +189,7 @@ class TodoList:
       with open(Constants.less_tmp_fname, 'w') as f:
         f.write(out)
       subprocess.call(['less', '-R', Constants.less_tmp_fname])
+      os.remove(Constants.less_tmp_fname)
     else:
       print(out)
 
