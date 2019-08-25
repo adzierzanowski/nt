@@ -1,22 +1,12 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import argparse
-from datetime import datetime as dt
+import subprocess
 
-from todo_list import TodoList
-from todo_item import TodoItem
-from constants import Constants
-
-def init():
-    if os.path.exists(Constants.list_fname):
-      print('.todo.json already exists')
-      print('remove it first with `nt rm list`')
-      exit(1)
-
-    todo_list = TodoList()
-    todo_list.to_file(force=True)
-    print('successfully created {}'.format(Constants.list_fname))
+from nt.todo_list import TodoList
+from nt.constants import Constants
 
 def main():
   parser = argparse.ArgumentParser('nt')
@@ -60,84 +50,41 @@ def main():
   args = parser.parse_args()
 
   if args.cmd is None:
-    parser.print_usage()
+    ntls = subprocess.Popen([sys.argv[0], 'ls'], stdout=subprocess.PIPE)
+    subprocess.call(['less', '-R'], stdin=ntls.stdout)
     exit(0)
 
   if args.cmd == 'init':
-    init()
+    TodoList.init()
     exit(0)
 
   todo_list = TodoList.from_file(Constants.list_fname)
+  if not todo_list:
+    print('{} not found'.format(Constants.list_fname))
+    print('init first with `nt init`')
+    exit(1)
 
   if args.cmd in ['a', 'add']:
-    if args.due:
-      for fmt in Constants.date_fmts:
-        try:
-          due = dt.strptime(args.due, fmt)
-          break
-        except ValueError:
-          due = None
-    else:
-      due = None
-
-    if due:
-      now = dt.now()
-      if due.year == 1900:
-        due = due.replace(year=now.year)
-
-    item = TodoItem(
-      todo_list.max_id+1,
-      ' '.join(args.content),
-      due,
-      args.priority)
-    todo_list.add_item(item)
-    todo_list.to_file()
+    todo_list.add_item(args.due, args.content, args.priority)
     exit(0)
 
   if args.cmd in ['e', 'edit']:
-    found = False
-    for i, item in enumerate(todo_list.items):
-      if item.id == args.id:
-        found = True
-
-        if args.content:
-          todo_list.items[i].content = args.content
-        if args.priority:
-          todo_list.items[i].priority = args.priority
-        if args.due:
-          todo_list.items[i].due_date = dt.strptime(args.due, Constants.date_fmt)
-        
-        todo_list.to_file()
-    
-    if found:
+    if todo_list.edit_item(args.id, args.content, args.due, args.priority):
       exit(0)
     else:
       print('no such item')
       exit(1)
 
   if args.cmd in ['l', 'ls']:
-    items = todo_list.items
-
-    if args.priority:
-      items = sorted(items,
-        key=lambda m: 0 if m.priority is None else -m.priority)
-    
-    if args.due:
-      items = sorted(items,
-      key=lambda m: dt(1900, 1, 1) if m.due_date is None else m.due_date,
-      reverse=True)
-
-    if not args.all:
-      if args.completed:
-        items = [item for item in items if item.completed]
-      elif args.uncompleted:
-        items = [item for item in items if not item.completed]
-
-    for arg in args.args:
-      items = [item for item in items if arg in item.content]
-
-    for item in items:
-      print(item)
+    todo_list.list_items(
+      priority=args.priority,
+      due=args.due,
+      all_=args.all,
+      completed=args.completed,
+      uncompleted=args.uncompleted,
+      args=args.args
+    )
+    exit(0)
 
   if args.cmd in ['r', 'd', 'rm']:
     if args.id == 'list':
@@ -154,24 +101,14 @@ def main():
     exit(0)
 
   if args.cmd in ['complete', 'c']:
-    items = [i for i in todo_list.items if i.id == args.id]
-    if items:
-      item = items[0]
-      item.completed = True
-      print(item)
-      todo_list.to_file()
+    if todo_list.set_completeness(args.id, True):
       exit(0)
     else:
       print('no such item')
       exit(1)
 
   if args.cmd in ['uncomplete', 'u']:
-    items = [i for i in todo_list.items if i.id == args.id]
-    if items:
-      item = items[0]
-      item.completed = False
-      print(item)
-      todo_list.to_file()
+    if todo_list.set_completeness(args.id, False):
       exit(0)
     else:
       print('no such item')

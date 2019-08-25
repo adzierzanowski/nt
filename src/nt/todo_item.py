@@ -1,6 +1,6 @@
 from datetime import datetime as dt
 
-from constants import Constants
+from .constants import Constants
 
 class TodoItem:
   def __init__(self, id_, content, due_date, priority, completed=False):
