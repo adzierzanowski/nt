@@ -9,5 +9,6 @@ class Constants:
     '%d.%m',
   ]
   command_tmp_fname = '~nt.todo.cmd'
+  less_tmp_fname = '~nt.less'
   editor = 'nvim'
   rcfile = '~/.ntrc'

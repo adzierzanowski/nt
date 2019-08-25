@@ -1,5 +1,7 @@
 import os
+import sys
 import json
+import subprocess
 from datetime import datetime as dt
 
 from .todo_item import TodoItem
@@ -115,7 +117,8 @@ class TodoList:
     all_=False,
     completed=False,
     uncompleted=False,
-    args=None):
+    args=None,
+    less=False):
     items = self.items
 
     if priority:
@@ -136,8 +139,19 @@ class TodoList:
     for arg in args:
       items = [item for item in items if arg in item.content]
 
-    for item in items:
-      print(item)
+    if less:
+      with open(Constants.less_tmp_fname, 'w') as f:
+        out = ''
+        for item in items:
+          out += str(item) + '\n'
+        f.write(out)
+
+      subprocess.call(['less', '-R', Constants.less_tmp_fname])
+      os.remove(Constants.less_tmp_fname)
+
+    else:
+      for item in items:
+          print(item)
 
   def to_file(self, force=False):
     if os.path.exists(Constants.list_fname) or force:
