@@ -2,14 +2,16 @@
 
 import os
 import sys
+import shlex
 import argparse
 import subprocess
 
 from nt.todo_list import TodoList
 from nt.constants import Constants
+from nt.meta import __progname__
 
 def main():
-  parser = argparse.ArgumentParser('nt')
+  parser = argparse.ArgumentParser(__progname__)
 
   subparsers = parser.add_subparsers(dest='cmd')
   subparsers.add_parser('init')
@@ -20,7 +22,7 @@ def main():
   complete_subparser = subparsers.add_parser('complete', aliases=['c'])
   uncomplete_subparser = subparsers.add_parser('uncomplete', aliases=['u'])
 
-  add_subparser.add_argument('content', help='content', nargs='+')
+  add_subparser.add_argument('content', help='content', nargs='*')
   add_subparser.add_argument('-d', '--due', help='due date', type=str)
   add_subparser.add_argument('-p', '--priority', help='priority', type=int)
 
@@ -61,19 +63,58 @@ def main():
   todo_list = TodoList.from_file(Constants.list_fname)
   if not todo_list:
     print('{} not found'.format(Constants.list_fname))
-    print('init first with `nt init`')
+    print('init first with `{} init`'.format(__progname__))
     exit(1)
 
+  def edit_command(cmd, args=[], content=''):
+    with open(Constants.command_tmp_fname, 'w') as f:
+      f.write(content)
+    
+    editor_retcode = subprocess.call(
+      [Constants.editor, Constants.command_tmp_fname])
+    if editor_retcode:
+      print('error: editor returned {}'.format(editor_retcode), file=sys.stderr)
+      os.remove(Constants.command_tmp_fname)
+      exit(1)
+
+    with open(Constants.command_tmp_fname, 'r') as f:
+      fcmd = shlex.split(f.read())
+      retcode = subprocess.call([__progname__, cmd] + args + fcmd)
+      if retcode:
+        print('something went wrong', file=sys.stderr)
+        os.remove(Constants.command_tmp_fname)
+        exit(1)
+      os.remove(Constants.command_tmp_fname)
+    
   if args.cmd in ['a', 'add']:
-    todo_list.add_item(args.due, args.content, args.priority)
+    if args.content:
+      todo_list.add_item(args.due, args.content, args.priority)
+    else:
+      edit_command('add')
     exit(0)
 
   if args.cmd in ['e', 'edit']:
-    if todo_list.edit_item(args.id, args.content, args.due, args.priority):
-      exit(0)
+    if any([args.content, args.due, args.priority]):
+      if todo_list.edit_item(args.id, args.content, args.due, args.priority):
+        exit(0)
+      else:
+        print('no such item')
+        exit(1)
     else:
-      print('no such item')
-      exit(1)
+      i, item = todo_list.get_item(args.id)
+      if item:
+        content = '-c \'{}\''.format(item.content)
+        if item.priority:
+          content += ' -p {}'.format(item.priority)
+        if item.due_date:
+          content += ' -d {}'.format(item.due_date.strftime(Constants.date_fmt))
+
+        edit_command('edit', args=[str(args.id)], content=content)
+
+      else:
+        print('no such item')
+        exit(1)
+    exit(0)
 
   if args.cmd in ['l', 'ls']:
     todo_list.list_items(

@@ -95,6 +95,7 @@ class TodoList:
           due = TodoList.parse_date(due_)
           self.items[i].due_date = due
         self.to_file()
+        print(item)
         return True
     return False
 

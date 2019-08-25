@@ -8,3 +8,5 @@ class Constants:
     '%d.%m.%Y',
     '%d.%m',
   ]
+  command_tmp_fname = '~nt.todo.cmd'
+  editor = 'nvim'
