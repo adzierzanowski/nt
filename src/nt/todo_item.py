@@ -30,7 +30,7 @@ class TodoItem:
       due += Fmt.end()
 
     if self.priority is None:
-      priority = ''
+      priority = Fmt.fg(3) + Fmt.end()
     else:
       priority = 'priority: {}'.format(Fmt.fg(3))
       priority += str(self.priority)
@@ -47,7 +47,7 @@ class TodoItem:
 
     content = '{}{}{}'.format(Fmt.fg(7), ' '.join(content), Fmt.end())
 
-    return '{}{:4}{} [{}]    {:20}    {:20}\n     {}\n'.format(
+    return '{}{:4}{} [{}]    {:30}    {:20}\n     {}\n'.format(
       Fmt.fg(4), self.id, Fmt.end(), completed, priority, due, content)
 
   @staticmethod

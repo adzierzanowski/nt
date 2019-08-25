@@ -50,4 +50,3 @@ class TodoListConfig:
         Fmt.fg(prefix_data['color']),
         prefix,
         prefix_data['name']))
-

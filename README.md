@@ -82,8 +82,6 @@ Same goes with `e[dit]` command.
 ## TODO
 
 * Better due date parsing.
-* Make items print equally (now the len func takes escape codes into account
-and breaks the layout)
 * Error handling is poor now.
 * Improve sorting by due date.
 * Tests.
