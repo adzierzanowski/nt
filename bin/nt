@@ -9,6 +9,43 @@ import subprocess
 from nt.todo_list import TodoList
 from nt.constants import Constants
 from nt.meta import __progname__
+from nt.meta import __version__
+
+def edit_command(cmd, args=[], content=''):
+  with open(Constants.command_tmp_fname, 'w') as f:
+    f.write(content)
+  
+  editor_retcode = subprocess.call(
+    [Constants.editor, Constants.command_tmp_fname])
+  if editor_retcode:
+    print('error: editor returned {}'.format(editor_retcode), file=sys.stderr)
+    os.remove(Constants.command_tmp_fname)
+    exit(1)
+
+  with open(Constants.command_tmp_fname, 'r') as f:
+    fcmd = shlex.split(f.read())
+    retcode = subprocess.call([__progname__, cmd] + args + fcmd)
+    if retcode:
+      print('something went wrong', file=sys.stderr)
+      os.remove(Constants.command_tmp_fname)
+      exit(1)
+    os.remove(Constants.command_tmp_fname)
+
+def parse_rcfile():
+  rcfname = os.path.expanduser(Constants.rcfile)
+  if os.path.exists(rcfname):
+    with open(rcfname, 'r') as f:
+      data = f.read()
+    
+    data = data.splitlines()
+    for line in data:
+      l = line.split('=')
+
+      if l[0] == 'editor':
+        Constants.editor = l[1]
+
+      elif l[0] == 'list_fname':
+        Constants.list_fname = l[1]
 
 def main():
   parser = argparse.ArgumentParser(__progname__)
@@ -21,6 +58,9 @@ def main():
   ls_subparser = subparsers.add_parser('ls', aliases=['l'])
   complete_subparser = subparsers.add_parser('complete', aliases=['c'])
   uncomplete_subparser = subparsers.add_parser('uncomplete', aliases=['u'])
+
+  parser.add_argument(
+    '-v', '--version', help='print version', action='store_true')
 
   add_subparser.add_argument('content', help='content', nargs='*')
   add_subparser.add_argument('-d', '--due', help='due date', type=str)
@@ -50,6 +90,11 @@ def main():
     help='show only uncompleted', action='store_false')
 
   args = parser.parse_args()
+  parse_rcfile()
+
+  if args.version:
+    print('{} version {}'.format(__progname__, __version__))
+    exit(0)
 
   if args.cmd is None:
     ntls = subprocess.Popen([sys.argv[0], 'ls'], stdout=subprocess.PIPE)
@@ -65,26 +110,6 @@ def main():
     print('{} not found'.format(Constants.list_fname))
     print('init first with `{} init`'.format(__progname__))
     exit(1)
-
-  def edit_command(cmd, args=[], content=''):
-    with open(Constants.command_tmp_fname, 'w') as f:
-      f.write(content)
-    
-    editor_retcode = subprocess.call(
-      [Constants.editor, Constants.command_tmp_fname])
-    if editor_retcode:
-      print('error: editor returned {}'.format(editor_retcode), file=sys.stderr)
-      os.remove(Constants.command_tmp_fname)
-      exit(1)
-
-    with open(Constants.command_tmp_fname, 'r') as f:
-      fcmd = shlex.split(f.read())
-      retcode = subprocess.call([__progname__, cmd] + args + fcmd)
-      if retcode:
-        print('something went wrong', file=sys.stderr)
-        os.remove(Constants.command_tmp_fname)
-        exit(1)
-      os.remove(Constants.command_tmp_fname)
     
   if args.cmd in ['a', 'add']:
     if args.content:
@@ -107,7 +132,7 @@ def main():
         if item.priority:
           content += ' -p {}'.format(item.priority)
         if item.due_date:
-          content += ' -d {}'.format(item.due_date.strftime(Constants.date_fmt))
+          content += ' -d \'{}\''.format(item.due_date.strftime(Constants.date_fmt))
 
         edit_command('edit', args=[str(args.id)], content=content)
 

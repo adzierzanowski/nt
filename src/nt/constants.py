@@ -10,3 +10,4 @@ class Constants:
   ]
   command_tmp_fname = '~nt.todo.cmd'
   editor = 'nvim'
+  rcfile = '~/.ntrc'
