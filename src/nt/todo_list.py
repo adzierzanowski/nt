@@ -1,5 +1,4 @@
 import os
-import sys
 import json
 import subprocess
 from datetime import datetime as dt
@@ -118,7 +117,8 @@ class TodoList:
     completed=False,
     uncompleted=False,
     args=None,
-    less=False):
+    less=False,
+    by_prefix=None):
     items = self.items
 
     if priority:
@@ -139,19 +139,47 @@ class TodoList:
     for arg in args:
       items = [item for item in items if arg in item.content]
 
-    if less:
-      with open(Constants.less_tmp_fname, 'w') as f:
-        out = ''
+    if by_prefix:
+      prefix_groups = {'no prefix': []}
+
+      for item in items:
+        prefixes = item.get_prefixes(by_prefix)
+        if prefixes:
+          for prefix in prefixes:
+            if prefix in prefix_groups:
+              prefix_groups[prefix].append(item)
+            else:
+              prefix_groups[prefix] = [item]
+        else:
+          prefix_groups['no prefix'].append(item)
+
+    out = ''
+    if by_prefix:
+      for group, items in prefix_groups.items():
+        if group == 'no prefix':
+          prefix_name = ''
+          group_name = '~none'
+        else:
+          prefix_name = by_prefix
+          group_name = group
+
+        out += '{}: \033[38;5;{}m{}{}\033[0m\n'.format(
+          self.config.prefixes[by_prefix]['name'],
+          self.config.prefixes[by_prefix]['color'],
+          prefix_name,
+          group_name)
         for item in items:
           out += str(item) + '\n'
-        f.write(out)
-
-      subprocess.call(['less', '-R', Constants.less_tmp_fname])
-      os.remove(Constants.less_tmp_fname)
-
     else:
       for item in items:
-          print(item)
+        out += str(item) + '\n'
+    
+    if less:
+      with open(Constants.less_tmp_fname, 'w') as f:
+        f.write(out)
+      subprocess.call(['less', '-R', Constants.less_tmp_fname])
+    else:
+      print(out)
 
   def to_file(self, force=False):
     if os.path.exists(Constants.list_fname) or force:

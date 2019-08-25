@@ -2,9 +2,9 @@ class TodoListConfig:
   def __init__(self, prefixes=None):
     if prefixes is None:
       self.prefixes = {
-        '+': 5,
-        '#': 6,
-        '@': 1
+        '+': {'color': 5, 'name': 'project'},
+        '#': {'color': 6, 'name': 'tag'},
+        '@': {'color': 1, 'name': 'context'}
       }
     else:
       self.prefixes = prefixes

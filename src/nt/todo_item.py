@@ -33,9 +33,11 @@ class TodoItem:
 
     content = self.content.split(' ')
     for i, word in enumerate(content):
-      for prefix, color in self.parent.config.prefixes.items():
+      for prefix, prefix_data in self.parent.config.prefixes.items():
         if word.startswith(prefix):
-          content[i] = '\033[38;5;{}m'.format(color) + word + '\033[38;5;7m'
+          content[i] = '\033[38;5;{}m'.format(prefix_data['color'])
+          content[i] += word
+          content[i] += '\033[38;5;7m'
           continue
 
     content = '\033[38;5;7m' + ' '.join(content) + '\033[0m'
@@ -65,3 +67,10 @@ class TodoItem:
       'completed': self.completed
     }
     return data
+
+  def get_prefixes(self, prefix):
+    prefixes = []
+    for word in self.content.split(' '):
+      if word.startswith(prefix):
+        prefixes.append(word[1:])
+    return prefixes

@@ -68,6 +68,7 @@ def main():
     print('init first with `{} init`'.format(__progname__))
     exit(1)
     
+  # cmd:add
   if args.cmd in ['a', 'add']:
     if args.content:
       todo_list.add_item(args.due, args.content, args.priority)
@@ -75,6 +76,7 @@ def main():
       edit_command('add')
     exit(0)
 
+  # cmd:edit
   if args.cmd in ['e', 'edit']:
     if any([args.content, args.due, args.priority]):
       if todo_list.edit_item(args.id, args.content, args.due, args.priority):
@@ -98,6 +100,7 @@ def main():
         exit(1)
     exit(0)
 
+  # cmd:ls
   if args.cmd in ['l', 'ls']:
     todo_list.list_items(
       priority=args.priority,
@@ -106,10 +109,12 @@ def main():
       completed=args.completed,
       uncompleted=args.uncompleted,
       args=args.args,
-      less=args.less
+      less=args.less,
+      by_prefix=args.by_prefix
     )
     exit(0)
 
+  # cmd:rm
   if args.cmd in ['r', 'd', 'rm']:
     if args.id == 'list':
       print('are you sure you want to delete the whole list? [y/n]', end=' ')
@@ -124,6 +129,7 @@ def main():
       print('item removed')
     exit(0)
 
+  # cmd:complete
   if args.cmd in ['complete', 'c']:
     if todo_list.set_completeness(args.id, True):
       exit(0)
@@ -131,6 +137,7 @@ def main():
       print('no such item')
       exit(1)
 
+  # cmd:uncomplete
   if args.cmd in ['uncomplete', 'u']:
     if todo_list.set_completeness(args.id, False):
       exit(0)
