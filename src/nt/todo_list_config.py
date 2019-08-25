@@ -1,7 +1,11 @@
 class TodoListConfig:
   def __init__(self, prefixes=None):
     if prefixes is None:
-      self.prefixes = ['+', '#', '@']
+      self.prefixes = {
+        '+': 5,
+        '#': 6,
+        '@': 1
+      }
     else:
       self.prefixes = prefixes
 

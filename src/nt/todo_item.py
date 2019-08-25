@@ -3,7 +3,8 @@ from datetime import datetime as dt
 from .constants import Constants
 
 class TodoItem:
-  def __init__(self, id_, content, due_date, priority, completed=False):
+  def __init__(self, parent, id_, content, due_date, priority, completed=False):
+    self.parent = parent
     self.id = id_
     self.content = content
     self.due_date = due_date
@@ -32,23 +33,20 @@ class TodoItem:
 
     content = self.content.split(' ')
     for i, word in enumerate(content):
-      if word.startswith('@'):
-        content[i] = '\033[38;5;1m' + word + '\033[38;5;7m'
-
-      elif word.startswith('+'):
-        content[i] = '\033[38;5;5m' + word + '\033[38;5;7m'
-
-      elif word.startswith('#'):
-        content[i] = '\033[38;5;6m' + word + '\033[38;5;7m'
+      for prefix, color in self.parent.config.prefixes.items():
+        if word.startswith(prefix):
+          content[i] = '\033[38;5;{}m'.format(color) + word + '\033[38;5;7m'
+          continue
 
     content = '\033[38;5;7m' + ' '.join(content) + '\033[0m'
 
-    return '\033[38;5;4m{:4}\033[0m [{}]    {}    {}\n     {}\n'.format(
-      self.id, completed, due, priority, content)
+    return '\033[38;5;4m{:4}\033[0m [{}]    {:20}    {:20}\n     {}\n'.format(
+      self.id, completed, priority, due, content)
 
   @staticmethod
-  def from_json(data):
+  def from_json(parent, data):
     item = TodoItem(
+      parent,
       data['id'],
       data['content'],
       None if data['due_date'] is None else dt.strptime(data['due_date'], Constants.date_fmt),

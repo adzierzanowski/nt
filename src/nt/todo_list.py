@@ -33,7 +33,7 @@ class TodoList:
       todo_list.config = TodoListConfig.from_json(data['config'])
 
       for item in data['items']:
-        item = TodoItem.from_json(item)
+        item = TodoItem.from_json(todo_list, item)
         todo_list.items.append(item)
         if item.id > todo_list.max_id:
           todo_list.max_id = item.id
@@ -75,6 +75,7 @@ class TodoList:
     due = TodoList.parse_date(due_)
 
     item = TodoItem(
+      self,
       self.max_id+1,
       ' '.join(content_),
       due,
@@ -102,6 +103,7 @@ class TodoList:
     if item:
       self.items[i].completed = complete
       self.to_file()
+      print(item)
       return True
     return False
 
