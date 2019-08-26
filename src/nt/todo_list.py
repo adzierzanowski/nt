@@ -260,4 +260,7 @@ class TodoList:
       'config': self.config.to_dict(),
       'items': [item.to_dict() for item in self.items]
     }
+
+    if Constants.pretty_json:
+      return json.dumps(data, indent=2)
     return json.dumps(data)

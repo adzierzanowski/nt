@@ -1,4 +1,4 @@
 '''Some metadata.'''
 
 __progname__ = 'nt'
-__version__ = '0.1.6'
+__version__ = '0.1.7'

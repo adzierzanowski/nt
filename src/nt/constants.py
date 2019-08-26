@@ -17,3 +17,4 @@ class Constants:
   editor = 'nvim'
   rcfile = '~/.ntrc'
   completed_char = 'x'
+  pretty_json = False
