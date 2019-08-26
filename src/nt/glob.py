@@ -1,6 +1,6 @@
 '''Runtime configuration.'''
 
-class Constants:
+class Glob:
   '''Some of these values are overriden when an ~/.ntrc file exists'''
 
   list_fname = '.todo.json'
@@ -15,6 +15,9 @@ class Constants:
   command_tmp_fname = '~nt.cmd'
   less_tmp_fname = '~nt.less'
   editor = 'nvim'
-  rcfile = '~/.ntrc'
-  completed_char = 'x'
+  rcfile = '.ntrc'
+
+  # per list default settings
+  completed_str = '[x]'
+  uncompleted_str = '[ ]'
   pretty_json = False

@@ -9,7 +9,7 @@ from datetime import timedelta
 
 from .todo_item import TodoItem
 from .todo_list_config import TodoListConfig
-from .constants import Constants
+from .glob import Glob
 from .meta import __progname__
 
 class PrefixNotDefined(Exception):
@@ -29,15 +29,15 @@ class TodoList:
     '''Initializes a list in the current directory. If a list exists, then it
     prints appropriate message to stderr and quits.'''
 
-    if os.path.exists(Constants.list_fname):
-      print('{} already exists'.format(Constants.list_fname), file=sys.stderr)
+    if os.path.exists(Glob.list_fname):
+      print('{} already exists'.format(Glob.list_fname), file=sys.stderr)
       print('remove it first with `{} rm list`'.format(__progname__),
         file=sys.stderr)
       exit(1)
 
     todo_list = TodoList()
     todo_list.to_file(force=True)
-    print('successfully created {}'.format(Constants.list_fname))
+    print('successfully created {}'.format(Glob.list_fname))
 
   @staticmethod
   def from_file(fname):
@@ -66,7 +66,7 @@ class TodoList:
     '''Returns a datetime.datetime instance based on an input string.'''
 
     if due_:
-      for fmt in Constants.date_fmts:
+      for fmt in Glob.date_fmts:
         try:
           due = dt.strptime(due_, fmt)
           break
@@ -234,10 +234,10 @@ class TodoList:
         out += str(item) + '\n'
 
     if less:
-      with open(Constants.less_tmp_fname, 'w') as f:
+      with open(Glob.less_tmp_fname, 'w') as f:
         f.write(out)
-      subprocess.call(['less', '-R', Constants.less_tmp_fname])
-      os.remove(Constants.less_tmp_fname)
+      subprocess.call(['less', '-R', Glob.less_tmp_fname])
+      os.remove(Glob.less_tmp_fname)
     else:
       print(out)
 
@@ -246,11 +246,11 @@ class TodoList:
   def to_file(self, force=False):
     '''Saves the current state of the list to a file.'''
 
-    if os.path.exists(Constants.list_fname) or force:
-      with open(Constants.list_fname, 'w') as f:
+    if os.path.exists(Glob.list_fname) or force:
+      with open(Glob.list_fname, 'w') as f:
         f.write(self.to_json())
     else:
-      print('{} not found'.format(Constants.list_fname))
+      print('{} not found'.format(Glob.list_fname))
       print('init list with `nt init`')
 
   def to_json(self):
@@ -261,6 +261,6 @@ class TodoList:
       'items': [item.to_dict() for item in self.items]
     }
 
-    if Constants.pretty_json:
+    if self.config.pretty_json:
       return json.dumps(data, indent=2)
     return json.dumps(data)

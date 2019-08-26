@@ -1,9 +1,16 @@
 '''This module handles per-list configuration.'''
 
 from .fmt import Fmt
+from .glob import Glob
 
 class TodoListConfig:
   '''TodoListConfig defines configuration of the TodoList.'''
+
+  keys = (
+    'completed_str',
+    'uncompleted_str',
+    'pretty_json'
+  )
 
   def __init__(self, prefixes=None):
     if prefixes is None:
@@ -15,12 +22,22 @@ class TodoListConfig:
     else:
       self.prefixes = prefixes
 
+    for key in TodoListConfig.keys:
+      setattr(self, key, getattr(Glob, key))
+
   @staticmethod
   def from_json(data):
     '''Returns TodoListConfig based on JSON data.'''
 
     cfg = TodoListConfig()
     cfg.prefixes = data['prefixes']
+
+    for key in TodoListConfig.keys:
+      if key in data:
+        setattr(cfg, key, data[key])
+      else:
+        setattr(cfg, key, getattr(Glob, key))
+
     return cfg
 
   def to_dict(self):
@@ -29,6 +46,9 @@ class TodoListConfig:
     data = {
       'prefixes': self.prefixes
     }
+
+    for key in TodoListConfig.keys:
+      data[key] = getattr(self, key)
     return data
 
   def add_prefix(self, symbol, name, color):
@@ -46,7 +66,12 @@ class TodoListConfig:
 
     print('List of defined prefixes:')
     for prefix, prefix_data in self.prefixes.items():
-      print('    {}{}{}'.format(
+      print('    {}{}{}{}'.format(
         Fmt.fg(prefix_data['color']),
         prefix,
-        prefix_data['name']))
+        prefix_data['name'],
+        Fmt.end()))
+
+    print()
+    for key in TodoListConfig.keys:
+      print(key + ':', getattr(self, key))

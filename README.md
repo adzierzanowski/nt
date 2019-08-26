@@ -3,6 +3,10 @@
 `nt` is a JSON todo-list CLI frontend. Just like
 [ultralist](https://github.com/ultralist/ultralist) but a little bit different.
 
+It is highly inspired by this thing that was the closest to my preferences
+but I have some issues with it. For one thing, `nt` is a little bit more
+customizable.
+
 ## FAQ
 
 ### Why?
@@ -23,10 +27,10 @@ It's good for me.
 
 ### How is it different?
 
-* Configurable prefixes per list. Default are `@context`, `#tag` and `+project`.
 * It requires less typing.
-* It provides git-like command editing in a text editor of your choice.
 * It's dead simple and small
+* It provides git-like command editing in a text editor of your choice.
+* Configurable prefixes per list. Default are `@context`, `#tag` and `+project`.
 * It depends on nothing beyond standard Python3 and widely-used unix
 utilities (namely `neovim` and `less`). And you're not limited to `neovim`,
 you can change it to some lame editor.
@@ -47,7 +51,8 @@ Type
     $ nt
 ```
 
-to get all uncompleted items piped to `less`.
+to get all uncompleted items piped to `less`. This can also be acheived by
+passing `-l` switch to `nt ls` command.
 
 [![asciicast](https://asciinema.org/a/0tvEpZ3P4h9pbrEa0lXWQOrKG.svg)](https://asciinema.org/a/0tvEpZ3P4h9pbrEa0lXWQOrKG)
 
@@ -70,14 +75,23 @@ Same goes with `e[dit]` command.
 
 [![asciicast](https://asciinema.org/a/AzMcet2kVExAoxHtKhngTob5n.svg)](https://asciinema.org/a/AzMcet2kVExAoxHtKhngTob5n)
 
-## ~/.ntrc
+## Configuration
+
+Example of `.ntrc`:
 
 ```ini
     editor=nvim
     list_fname=.todo.json
     date_fmt=%d.%m.%y %H:%M
     date_fmt=%m-%d
+    pretty_json=true
+    completed_str=[x]
+    uncompleted_str=[ ]
 ```
+
+### Configuration precedence
+
+    ~/.ntrc < .ntrc < .todo.json config dict
 
 ## TODO
 

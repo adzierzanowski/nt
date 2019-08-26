@@ -13,7 +13,10 @@
         "color": 1,
         "name": "context"
       }
-    }
+    },
+    "completed_str": "[x]",
+    "uncompleted_str": "[ ]",
+    "pretty_json": true
   },
   "items": [
     {
@@ -25,7 +28,7 @@
     },
     {
       "id": 1,
-      "content": "improve #error-handling",
+      "content": "improve #error handling",
       "due_date": null,
       "priority": null,
       "completed": false
@@ -40,6 +43,13 @@
     {
       "id": 3,
       "content": "improve #sorting by #due date",
+      "due_date": null,
+      "priority": null,
+      "completed": false
+    },
+    {
+      "id": 4,
+      "content": "add more #sorting and #filtering options",
       "due_date": null,
       "priority": null,
       "completed": false

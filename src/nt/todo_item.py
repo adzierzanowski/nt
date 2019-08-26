@@ -2,7 +2,7 @@
 
 from datetime import datetime as dt
 
-from .constants import Constants
+from .glob import Glob
 from .fmt import Fmt
 
 class TodoItem:
@@ -18,9 +18,9 @@ class TodoItem:
 
   def __str__(self):
     if self.completed:
-      completed = Constants.completed_char
+      completed = self.parent.config.completed_str
     else:
-      completed = ' ' * len(Constants.completed_char)
+      completed = self.parent.config.uncompleted_str
 
     if self.due_date is None:
       due = ''
@@ -29,7 +29,7 @@ class TodoItem:
         due = 'due: {}'.format(Fmt.fg(2))
       else:
         due = 'due: {}'.format(Fmt.fg(1))
-      due += self.due_date.strftime(Constants.date_fmt)
+      due += self.due_date.strftime(Glob.date_fmt)
       due += Fmt.end()
 
     if self.priority is None:
@@ -50,7 +50,7 @@ class TodoItem:
 
     content = '{}{}{}'.format(Fmt.fg(7), ' '.join(content), Fmt.end())
 
-    return '{}{:4}{} [{}]    {:30}    {:20}\n     {}\n'.format(
+    return '{}{:4}{} {}    {:30}    {:20}\n     {}\n'.format(
       Fmt.fg(4), self.id, Fmt.end(), completed, priority, due, content)
 
   @staticmethod
@@ -61,7 +61,7 @@ class TodoItem:
     if data['due_date'] is None:
       due = None
     else:
-      due = dt.strptime(data['due_date'], Constants.date_fmt)
+      due = dt.strptime(data['due_date'], Glob.date_fmt)
 
     item = TodoItem(
       parent,
@@ -79,7 +79,7 @@ class TodoItem:
     if self.due_date is None:
       due = None
     else:
-      due = self.due_date.strftime(Constants.date_fmt)
+      due = self.due_date.strftime(Glob.date_fmt)
 
     data = {
       'id': self.id,
