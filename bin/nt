@@ -6,7 +6,7 @@ import shlex
 import subprocess
 
 from nt.fmt import Fmt
-from nt.todo_list import TodoList
+from nt.todo_list import TodoList, PrefixNotDefined
 from nt.constants import Constants
 from nt.argparser import parse_args
 from nt.meta import __progname__, __version__
@@ -132,16 +132,21 @@ def main():
 
   # cmd:ls
   if args.cmd in ('l', 'ls'):
-    todo_list.list_items(
-      priority=args.priority,
-      due=args.due,
-      all_=args.all,
-      completed=args.completed,
-      uncompleted=args.uncompleted,
-      args=args.args,
-      less=args.less,
-      by_prefix=args.by_prefix
-    )
+    try:
+      todo_list.list_items(
+        priority=args.priority,
+        due=args.due,
+        all_=args.all,
+        completed=args.completed,
+        uncompleted=args.uncompleted,
+        args=args.args,
+        less=args.less,
+        by_prefix=args.by_prefix
+      )
+    except PrefixNotDefined:
+      print('{}prefix {} was not defined{}'.format(
+        Fmt.fg(1), args.by_prefix, Fmt.end()), file=sys.stderr)
+
     exit(0)
 
   # cmd:rm

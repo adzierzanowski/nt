@@ -12,6 +12,10 @@ from .todo_list_config import TodoListConfig
 from .constants import Constants
 from .meta import __progname__
 
+class PrefixNotDefined(Exception):
+  '''Exception raised when there's an attempt to use a prefix that was not
+  defined.'''
+
 class TodoList:
   '''TodoList represents, wait for it... a todo list.'''
 
@@ -204,6 +208,11 @@ class TodoList:
 
     out = ''
     if by_prefix:
+      try:
+        self.config.prefixes[by_prefix]
+      except KeyError:
+        raise PrefixNotDefined
+
       for group, items in prefix_groups.items():
         if group == 'no prefix':
           prefix_name = ''
@@ -231,6 +240,8 @@ class TodoList:
       os.remove(Constants.less_tmp_fname)
     else:
       print(out)
+
+    return True
 
   def to_file(self, force=False):
     '''Saves the current state of the list to a file.'''
