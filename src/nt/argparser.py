@@ -58,6 +58,8 @@ def parse_args():
   ls_subparser.add_argument(
     '-l', '--less', help='pipe the output to less', action='store_true')
   ls_subparser.add_argument(
+    '-o', '--overdue', help='list overdue', action='store_true')
+  ls_subparser.add_argument(
     '-p', '--priority', help='sort by priority', action='store_true')
   ls_subparser.add_argument(
     '-u', '--uncompleted',

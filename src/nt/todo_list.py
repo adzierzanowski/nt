@@ -169,7 +169,8 @@ class TodoList:
     uncompleted=False,
     args=None,
     less=False,
-    by_prefix=None):
+    by_prefix=None,
+    overdue=False):
     '''Lists items from the list.'''
 
     items = self.items
@@ -188,6 +189,10 @@ class TodoList:
         items = [item for item in items if item.completed]
       elif uncompleted:
         items = [item for item in items if not item.completed]
+
+    if overdue:
+      items = [item for item in items if item.due_date is not None \
+        and item.due_date < dt.now()]
 
     for arg in args:
       items = [item for item in items if arg in item.content]
@@ -239,7 +244,7 @@ class TodoList:
       subprocess.call(['less', '-R', Glob.less_tmp_fname])
       os.remove(Glob.less_tmp_fname)
     else:
-      print(out)
+      print(out, end='')
 
     return True
 

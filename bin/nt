@@ -162,7 +162,8 @@ def main():
         uncompleted=args.uncompleted,
         args=args.args,
         less=args.less,
-        by_prefix=args.by_prefix
+        by_prefix=args.by_prefix,
+        overdue=args.overdue
       )
     except PrefixNotDefined:
       print('{}prefix {} was not defined{}'.format(
