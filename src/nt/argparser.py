@@ -12,13 +12,20 @@ def parse_args():
 
   subparsers = parser.add_subparsers(dest='cmd')
   subparsers.add_parser('init')
-  add_subparser = subparsers.add_parser('add', aliases=['a'])
-  cfg_subparser = subparsers.add_parser('config', aliases=['cfg'])
-  edit_subparser = subparsers.add_parser('edit', aliases=['e'])
-  rm_subparser = subparsers.add_parser('rm', aliases=['r', 'd'])
-  ls_subparser = subparsers.add_parser('ls', aliases=['l'])
-  complete_subparser = subparsers.add_parser('complete', aliases=['c'])
-  uncomplete_subparser = subparsers.add_parser('uncomplete', aliases=['u'])
+  add_subparser = subparsers.add_parser(
+    'add', aliases=['a'], help='add an item')
+  cfg_subparser = subparsers.add_parser(
+    'config', aliases=['cfg'], help='configure')
+  edit_subparser = subparsers.add_parser(
+    'edit', aliases=['e'], help='edit an item')
+  rm_subparser = subparsers.add_parser(
+    'rm', aliases=['r', 'd'], help='remove an item')
+  ls_subparser = subparsers.add_parser(
+    'ls', aliases=['l', 'i', 'items'], help='list items')
+  complete_subparser = subparsers.add_parser(
+    'complete', aliases=['c'], help='mark an item as completed')
+  uncomplete_subparser = subparsers.add_parser(
+    'uncomplete', aliases=['u'], help='mark an item as uncompleted')
 
   parser.add_argument(
     '-v', '--version', help='print version', action='store_true')

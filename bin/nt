@@ -152,7 +152,7 @@ def main():
     exit(0)
 
   # cmd:ls
-  if args.cmd in ('l', 'ls'):
+  if args.cmd in ('l', 'ls', 'i', 'items'):
     try:
       todo_list.list_items(
         priority=args.priority,
