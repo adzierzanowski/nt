@@ -12,7 +12,8 @@ class Constants:
     '%d.%m.%Y',
     '%d.%m',
   ]
-  command_tmp_fname = '~nt.todo.cmd'
+  command_tmp_fname = '~nt.cmd'
   less_tmp_fname = '~nt.less'
   editor = 'nvim'
   rcfile = '~/.ntrc'
+  completed_char = 'x'

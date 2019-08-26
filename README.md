@@ -81,10 +81,7 @@ Same goes with `e[dit]` command.
 
 ## TODO
 
-* Better due date parsing.
-* Error handling is poor now.
-* Improve sorting by due date.
-* Tests.
+See `.todo.json` ;)
 
 ## zsh completions
 

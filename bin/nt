@@ -49,6 +49,9 @@ def parse_rcfile():
 
       elif l[0] == 'list_fname':
         Constants.list_fname = l[1]
+
+      elif l[0] == 'completed_char':
+        Constants.completed_char = l[1]
       
       elif l[0] == 'date_fmt':
         date_fmt_cnt += 1

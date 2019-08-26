@@ -17,7 +17,10 @@ class TodoItem:
     self.completed = completed
 
   def __str__(self):
-    completed = 'x' if self.completed else ' '
+    if self.completed:
+      completed = Constants.completed_char
+    else:
+      completed = ' ' * len(Constants.completed_char)
 
     if self.due_date is None:
       due = ''
