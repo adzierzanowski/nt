@@ -120,6 +120,14 @@ class TodoList:
     self.to_file()
     print(item)
 
+  def remove_item(self, id_):
+    '''Removes an item from the list based on its id.'''
+    i, item = self.get_item(id_)
+    if item:
+      del self.items[i]
+      return True
+    return False
+
   def edit_item(self, id_, content_, due_, priority_):
     '''Updates TodoItem's fields.'''
 

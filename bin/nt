@@ -5,10 +5,11 @@ import sys
 import shlex
 import subprocess
 
+from nt.fmt import Fmt
 from nt.todo_list import TodoList
 from nt.constants import Constants
-from nt.meta import __progname__, __version__
 from nt.argparser import parse_args
+from nt.meta import __progname__, __version__
 
 def edit_command(cmd, args=[], content=''):
   with open(Constants.command_tmp_fname, 'w') as f:
@@ -17,7 +18,8 @@ def edit_command(cmd, args=[], content=''):
   editor_retcode = subprocess.call(
     [Constants.editor, Constants.command_tmp_fname])
   if editor_retcode:
-    print('error: editor returned {}'.format(editor_retcode), file=sys.stderr)
+    print('{}error: editor returned {}{}'.format(
+      Fmt.fg(1), editor_retcode, Fmt.end(), file=sys.stderr))
     os.remove(Constants.command_tmp_fname)
     exit(1)
 
@@ -25,7 +27,8 @@ def edit_command(cmd, args=[], content=''):
     fcmd = shlex.split(f.read())
     retcode = subprocess.call([__progname__, cmd] + args + fcmd)
     if retcode:
-      print('something went wrong', file=sys.stderr)
+      print('{}something went wrong{}'.format(
+        Fmt.fg(1), Fmt.end()), file=sys.stderr)
       os.remove(Constants.command_tmp_fname)
       exit(1)
     os.remove(Constants.command_tmp_fname)
@@ -71,8 +74,9 @@ def main():
 
   todo_list = TodoList.from_file(Constants.list_fname)
   if not todo_list:
-    print('{} not found'.format(Constants.list_fname))
-    print('init first with `{} init`'.format(__progname__))
+    print('{}{} not found{}'.format(
+      Fmt.fg(1), Constants.list_fname, Fmt.end()), file=sys.stderr)
+    print('init first with `{} init`'.format(__progname__), file=sys.stderr)
     exit(1)
     
   # cmd:add
@@ -87,8 +91,8 @@ def main():
   if args.cmd in ('cfg', 'config'):
     if args.add_prefix:
       if any([not args.name, not args.color]):
-        print('-n, and -c switches are required when adding a prefix',
-          file=sys.stderr)
+        print('{}-n and -c switches are required when adding a prefix{}'.format(
+          Fmt.fg(1), Fmt.end()), file=sys.stderr)
         exit(1)
       todo_list.config.add_prefix(args.add_prefix, args.name, args.color)
       todo_list.to_file()
@@ -108,7 +112,7 @@ def main():
       if todo_list.edit_item(args.id, args.content, args.due, args.priority):
         exit(0)
       else:
-        print('no such item')
+        print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
         exit(1)
     else:
       i, item = todo_list.get_item(args.id)
@@ -122,7 +126,7 @@ def main():
         edit_command('edit', args=[str(args.id)], content=content)
 
       else:
-        print('no such item')
+        print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
         exit(1)
     exit(0)
 
@@ -147,20 +151,25 @@ def main():
       yesno = input()
       if yesno in ['y', 'Y']:
         os.remove(Constants.list_fname)
-        print('successfully removed the list')
+        print('{}successfully removed the list{}'.format(Fmt.fg(2), Fmt.end()))
+        exit(0)
+      else:
+        exit(0)
     else:
-      id_ = int(args.id)
-      todo_list.items = [item for item in todo_list.items if item.id != id_]
-      todo_list.to_file()
-      print('item removed')
-    exit(0)
+      if todo_list.remove_item(int(args.id)):
+        todo_list.to_file()
+        print('{}item removed{}'.format(Fmt.fg(2), Fmt.end()))
+        exit(0)
+      else:
+        print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
+        exit(1)
 
   # cmd:complete
   if args.cmd in ('complete', 'c'):
     if todo_list.set_completeness(args.id, True):
       exit(0)
     else:
-      print('no such item')
+      print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
       exit(1)
 
   # cmd:uncomplete
@@ -168,7 +177,7 @@ def main():
     if todo_list.set_completeness(args.id, False):
       exit(0)
     else:
-      print('no such item')
+      print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
       exit(1)
 
 if __name__ == '__main__':
