@@ -11,11 +11,14 @@ from nt.glob import Glob
 from nt.argparser import parse_args
 from nt.meta import __progname__, __version__
 
-def edit_command(cmd, args=[], content=''):
+def edit_command(cmd, args=None, content=''):
   def abort_with_msg(msg):
     print('{}{}{}'.format(Fmt.fg(1), msg, Fmt.end()), file=sys.stderr)
     os.remove(Glob.command_tmp_fname)
     exit(1)
+
+  if args is None:
+    args = []
 
   with open(Glob.command_tmp_fname, 'w') as f:
     f.write(content)
