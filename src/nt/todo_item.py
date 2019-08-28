@@ -45,10 +45,10 @@ class TodoItem:
         if word.startswith(prefix):
           content[i] = Fmt.fg(prefix_data['color'])
           content[i] += word
-          content[i] += Fmt.fg(7)
+          content[i] += Fmt.end()
           continue
 
-    content = '{}{}{}'.format(Fmt.fg(7), ' '.join(content), Fmt.end())
+    content = '{}{}{}'.format(Fmt.end(), ' '.join(content), Fmt.end())
 
     return '{}{:4}{} {}    {:30}    {:20}\n     {}\n'.format(
       Fmt.fg(4), self.id, Fmt.end(), completed, priority, due, content)
