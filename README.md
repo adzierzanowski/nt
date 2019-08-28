@@ -85,6 +85,7 @@ Example of `.ntrc`:
     pretty_json=true
     completed_str=[x]
     uncompleted_str=[ ]
+    default_less_pipe=true
 ```
 
 ### Configuration precedence
