@@ -1,4 +1,5 @@
 # nt
+![](https://travis-ci.org/adzierzanowski/nt.svg?branch=master)
 
 `nt` is a JSON todo-list CLI frontend. Just like
 [ultralist](https://github.com/ultralist/ultralist) but a little bit different.
