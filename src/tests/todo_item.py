@@ -6,7 +6,8 @@ from nt.todo_list import TodoList
 
 class TodoItemTest(unittest.TestCase):
   def setUp(self):
-    self.content = 'Hello @context, I am working on my +project regarding #tag and #another-tag'
+    self.content = 'Hello @context, I am working on my +project\
+      regarding #tag and #another-tag'
     self.todo_item = TodoItem(
       parent=TodoList(),
       id=0,
