@@ -29,6 +29,8 @@ def parse_args():
     'uncomplete', aliases=['u'], help='mark an item as uncompleted')
 
   parser.add_argument(
+    '-d', '--directory', help='specify a directory', type=str)
+  parser.add_argument(
     '-v', '--version', help='print version', action='store_true')
 
   add_subparser.add_argument('content', help='content', nargs='*')

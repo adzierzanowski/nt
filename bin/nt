@@ -88,6 +88,9 @@ def main():
   parse_rcfile()
   args, parser = parse_args()
 
+  if args.directory:
+    os.chdir(args.directory)
+
   if args.version:
     print('{} version {}'.format(__progname__, __version__))
     exit(0)
