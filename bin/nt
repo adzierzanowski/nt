@@ -5,31 +5,31 @@ import sys
 import shlex
 import subprocess
 
+from nt import glob
 from nt.fmt import Fmt
 from nt.todo_list import TodoList, PrefixNotDefined
-from nt.glob import Glob
 from nt.argparser import parse_args
 from nt.meta import __progname__, __version__
 
 def edit_command(cmd, args=None, content=''):
   def abort_with_msg(msg):
     print('{}{}{}'.format(Fmt.fg(1), msg, Fmt.end()), file=sys.stderr)
-    os.remove(Glob.command_tmp_fname)
+    os.remove(glob.command_tmp_fname)
     exit(1)
 
   if args is None:
     args = []
 
-  with open(Glob.command_tmp_fname, 'w') as f:
+  with open(glob.command_tmp_fname, 'w') as f:
     f.write(content)
   
   editor_retcode = subprocess.call(
-    [Glob.editor, Glob.command_tmp_fname])
+    [glob.editor, glob.command_tmp_fname])
 
   if editor_retcode:
     abort_with_msg('error: editor returned {}'.format(editor_retcode))
 
-  with open(Glob.command_tmp_fname, 'r') as f:
+  with open(glob.command_tmp_fname, 'r') as f:
     fcmd = shlex.split(f.read())
     if fcmd == []:
       abort_with_msg('aborting due to empty command')
@@ -38,15 +38,15 @@ def edit_command(cmd, args=None, content=''):
     if retcode:
       abort_with_msg('something went wrong')
 
-    os.remove(Glob.command_tmp_fname)
+    os.remove(glob.command_tmp_fname)
 
 def parse_rcfile():
-  rcfname = os.path.expanduser(Glob.rcfile)
+  rcfname = os.path.expanduser(glob.rcfile)
 
-  if os.path.exists(Glob.rcfile):
-    rcfname = Glob.rcfile
-  elif os.path.exists(os.path.join(os.path.expanduser('~'), Glob.rcfile)):
-    rcfname = os.path.join(os.path.expanduser('~'), Glob.rcfile)
+  if os.path.exists(glob.rcfile):
+    rcfname = glob.rcfile
+  elif os.path.exists(os.path.join(os.path.expanduser('~'), glob.rcfile)):
+    rcfname = os.path.join(os.path.expanduser('~'), glob.rcfile)
   else:
     return
 
@@ -59,30 +59,30 @@ def parse_rcfile():
     l = line.split('=')
 
     if l[0] == 'editor':
-      Glob.editor = l[1]
+      glob.editor = l[1]
 
     elif l[0] == 'list_fname':
-      Glob.list_fname = l[1]
+      glob.list_fname = l[1]
 
     elif l[0] == 'completed_str':
-      Glob.completed_str = l[1]
+      glob.completed_str = l[1]
 
     elif l[0] == 'uncompleted_str':
-      Glob.uncompleted_str = l[1]
+      glob.uncompleted_str = l[1]
 
     elif l[0] == 'pretty_json':
       if l[1].lower() == 'true':
-        Glob.pretty_json = True
+        glob.pretty_json = True
 
     elif l[0] == 'default_less_pipe':
       if l[1].lower() == 'true':
-        Glob.default_less_pipe = True
+        glob.default_less_pipe = True
     
     elif l[0] == 'date_fmt':
       date_fmt_cnt += 1
       if date_fmt_cnt == 1:
-        Glob.date_fmt = l[1]
-      Glob.date_fmts += l[1]
+        glob.date_fmt = l[1]
+      glob.date_fmts += l[1]
 
 def main():
   parse_rcfile()
@@ -103,10 +103,10 @@ def main():
     TodoList.init()
     exit(0)
 
-  todo_list = TodoList.from_file(Glob.list_fname)
+  todo_list = TodoList.from_file(glob.list_fname)
   if not todo_list:
     print('{}{} not found{}'.format(
-      Fmt.fg(1), Glob.list_fname, Fmt.end()), file=sys.stderr)
+      Fmt.fg(1), glob.list_fname, Fmt.end()), file=sys.stderr)
     print('init first with `{} init`'.format(__progname__), file=sys.stderr)
     exit(1)
     
@@ -152,7 +152,7 @@ def main():
         if item.priority:
           content += ' -p {}'.format(item.priority)
         if item.due_date:
-          content += ' -d \'{}\''.format(item.due_date.strftime(Glob.date_fmt))
+          content += ' -d \'{}\''.format(item.due_date.strftime(glob.date_fmt))
 
         edit_command('edit', args=[str(args.id)], content=content)
 
@@ -187,7 +187,7 @@ def main():
       print('are you sure you want to delete the whole list? [y/n]', end=' ')
       yesno = input()
       if yesno in ['y', 'Y']:
-        os.remove(Glob.list_fname)
+        os.remove(glob.list_fname)
         print('{}successfully removed the list{}'.format(Fmt.fg(2), Fmt.end()))
         exit(0)
       else:

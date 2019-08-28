@@ -1,7 +1,7 @@
 '''This module handles per-list configuration.'''
 
 from .fmt import Fmt
-from .glob import Glob
+from . import glob
 
 class TodoListConfig:
   '''TodoListConfig defines configuration of the TodoList.'''
@@ -23,7 +23,7 @@ class TodoListConfig:
       self.prefixes = prefixes
 
     for key in TodoListConfig.keys:
-      setattr(self, key, getattr(Glob, key))
+      setattr(self, key, getattr(glob, key))
 
   @staticmethod
   def from_json(data):
@@ -36,7 +36,7 @@ class TodoListConfig:
       if key in data:
         setattr(cfg, key, data[key])
       else:
-        setattr(cfg, key, getattr(Glob, key))
+        setattr(cfg, key, getattr(glob, key))
 
     return cfg
 

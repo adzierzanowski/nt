@@ -2,7 +2,7 @@
 
 from datetime import datetime as dt
 
-from .glob import Glob
+from . import glob
 from .fmt import Fmt
 
 class TodoItem:
@@ -29,7 +29,7 @@ class TodoItem:
         due = 'due: {}'.format(Fmt.fg(2))
       else:
         due = 'due: {}'.format(Fmt.fg(1))
-      due += self.due_date.strftime(Glob.date_fmt)
+      due += self.due_date.strftime(glob.date_fmt)
       due += Fmt.end()
 
     if self.priority is None:
@@ -61,7 +61,7 @@ class TodoItem:
     if data['due_date'] is None:
       due = None
     else:
-      due = dt.strptime(data['due_date'], Glob.date_fmt)
+      due = dt.strptime(data['due_date'], glob.date_fmt)
 
     item = TodoItem(
       parent,
@@ -79,7 +79,7 @@ class TodoItem:
     if self.due_date is None:
       due = None
     else:
-      due = self.due_date.strftime(Glob.date_fmt)
+      due = self.due_date.strftime(glob.date_fmt)
 
     data = {
       'id': self.id,

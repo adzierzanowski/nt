@@ -2,8 +2,8 @@
 
 import argparse
 
+from . import glob
 from .meta import __progname__
-from .glob import Glob
 
 def parse_args():
   '''Define and parse command line arguments.
@@ -67,7 +67,7 @@ def parse_args():
     '-d', '--due', help='sort by due date', action='store_true')
   ls_subparser.add_argument(
     '-l', '--less', help='pipe the output to less',
-    action='store_false' if Glob.default_less_pipe else 'store_true')
+    action='store_false' if glob.default_less_pipe else 'store_true')
   ls_subparser.add_argument(
     '-o', '--overdue', help='list overdue', action='store_true')
   ls_subparser.add_argument(

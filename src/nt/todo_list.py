@@ -9,7 +9,7 @@ from datetime import timedelta
 
 from .todo_item import TodoItem
 from .todo_list_config import TodoListConfig
-from .glob import Glob
+from . import glob
 from .meta import __progname__
 
 class PrefixNotDefined(Exception):
@@ -29,15 +29,15 @@ class TodoList:
     '''Initializes a list in the current directory. If a list exists, then it
     prints appropriate message to stderr and quits.'''
 
-    if os.path.exists(Glob.list_fname):
-      print('{} already exists'.format(Glob.list_fname), file=sys.stderr)
+    if os.path.exists(glob.list_fname):
+      print('{} already exists'.format(glob.list_fname), file=sys.stderr)
       print('remove it first with `{} rm list`'.format(__progname__),
         file=sys.stderr)
       exit(1)
 
     todo_list = TodoList()
     todo_list.to_file(force=True)
-    print('successfully created {}'.format(Glob.list_fname))
+    print('successfully created {}'.format(glob.list_fname))
 
   @staticmethod
   def from_file(fname):
@@ -66,7 +66,7 @@ class TodoList:
     '''Returns a datetime.datetime instance based on an input string.'''
 
     if due_:
-      for fmt in Glob.date_fmts:
+      for fmt in glob.date_fmts:
         try:
           due = dt.strptime(due_, fmt)
           break
@@ -265,21 +265,21 @@ class TodoList:
         out += str(item) + '\n'
 
     if less:
-      with open(Glob.less_tmp_fname, 'w') as f:
+      with open(glob.less_tmp_fname, 'w') as f:
         f.write(out)
-      subprocess.call(['less', '-R', Glob.less_tmp_fname])
-      os.remove(Glob.less_tmp_fname)
+      subprocess.call(['less', '-R', glob.less_tmp_fname])
+      os.remove(glob.less_tmp_fname)
     else:
       print(out, end='')
 
   def to_file(self, force=False):
     '''Saves the current state of the list to a file.'''
 
-    if os.path.exists(Glob.list_fname) or force:
-      with open(Glob.list_fname, 'w') as f:
+    if os.path.exists(glob.list_fname) or force:
+      with open(glob.list_fname, 'w') as f:
         f.write(self.to_json())
     else:
-      print('{} not found'.format(Glob.list_fname))
+      print('{} not found'.format(glob.list_fname))
       print('init list with `nt init`')
 
   def to_json(self):
