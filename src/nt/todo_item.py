@@ -55,8 +55,8 @@ class TodoItem:
       Fmt.fg(4), self.id, Fmt.end(), completed, priority, due, content)
 
   @staticmethod
-  def from_json(parent, data):
-    '''Returns a TodoItem from JSON data. The first argument specifies a
+  def from_dict(parent, data):
+    '''Returns a TodoItem from dictionary. The first argument specifies a
     TodoList to which the TodoItem belongs.'''
 
     if data['due_date'] is None:
@@ -65,12 +65,12 @@ class TodoItem:
       due = dt.strptime(data['due_date'], glob.date_fmt)
 
     item = TodoItem(
-      parent,
-      data['id'],
-      data['content'],
-      due,
-      data['priority'],
-      data['completed']
+      parent=parent,
+      id=data['id'],
+      content=data['content'],
+      due_date=due,
+      priority=data['priority'],
+      completed=data['completed']
     )
     return item
 
@@ -98,5 +98,5 @@ class TodoItem:
     prefixes = []
     for word in self.content.split(' '):
       if word.startswith(prefix):
-        prefixes.append(word[1:])
+        prefixes.append(word[1:].strip('\t.,;:/'))
     return prefixes

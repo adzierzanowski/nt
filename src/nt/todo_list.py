@@ -48,10 +48,10 @@ class TodoList:
       with open(fname, 'r') as f:
         data = json.load(f)
 
-      todo_list.config = TodoListConfig.from_json(data['config'])
+      todo_list.config = TodoListConfig.from_dict(data['config'])
 
       for item in data['items']:
-        item = TodoItem.from_json(todo_list, item)
+        item = TodoItem.from_dict(todo_list, item)
         todo_list.items.append(item)
         if item.id > todo_list.max_id:
           todo_list.max_id = item.id

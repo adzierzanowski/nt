@@ -26,8 +26,8 @@ class TodoListConfig:
       setattr(self, key, getattr(glob, key))
 
   @staticmethod
-  def from_json(data):
-    '''Returns TodoListConfig based on JSON data.'''
+  def from_dict(data):
+    '''Returns TodoListConfig based on dictionary.'''
 
     cfg = TodoListConfig()
     cfg.prefixes = data['prefixes']
