@@ -16,6 +16,7 @@ class Glob:
   less_tmp_fname = '~nt.less'
   editor = 'nvim'
   rcfile = '.ntrc'
+  default_less_pipe = False
 
   # per list default settings
   completed_str = '[x]'

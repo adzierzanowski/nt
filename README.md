@@ -51,10 +51,8 @@ Type
     $ nt
 ```
 
-to get all uncompleted items piped to `less`. This can also be acheived by
-passing `-l` switch to `nt ls` command.
-
-[![asciicast](https://asciinema.org/a/0tvEpZ3P4h9pbrEa0lXWQOrKG.svg)](https://asciinema.org/a/0tvEpZ3P4h9pbrEa0lXWQOrKG)
+to get all uncompleted items. This can be piped to `less` by passing `-l`
+switch to `nt ls` command.
 
 Type
 
@@ -71,7 +69,7 @@ edit `~/.ntrc` to change the editor) to edit passed parameters.
 
 Same goes with `e[dit]` command.
 
-### Some more workflow examples
+### Some workflow examples
 
 [![asciicast](https://asciinema.org/a/AzMcet2kVExAoxHtKhngTob5n.svg)](https://asciinema.org/a/AzMcet2kVExAoxHtKhngTob5n)
 

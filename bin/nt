@@ -73,6 +73,10 @@ def parse_rcfile():
     elif l[0] == 'pretty_json':
       if l[1].lower() == 'true':
         Glob.pretty_json = True
+
+    elif l[0] == 'default_less_pipe':
+      if l[1].lower() == 'true':
+        Glob.default_less_pipe = True
     
     elif l[0] == 'date_fmt':
       date_fmt_cnt += 1
@@ -81,15 +85,15 @@ def parse_rcfile():
       Glob.date_fmts += l[1]
 
 def main():
-  args, parser = parse_args()
   parse_rcfile()
+  args, parser = parse_args()
 
   if args.version:
     print('{} version {}'.format(__progname__, __version__))
     exit(0)
 
   if args.cmd is None:
-    subprocess.call([__progname__, 'ls', '-l'])
+    subprocess.call([__progname__, 'ls'])
     exit(0)
 
   if args.cmd == 'init':
