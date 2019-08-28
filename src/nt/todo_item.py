@@ -1,20 +1,21 @@
 '''This module handles single todo list items.'''
 
+from dataclasses import dataclass
 from datetime import datetime as dt
 
 from . import glob
 from .fmt import Fmt
 
+@dataclass
 class TodoItem:
   '''TodoItem is a direct mapping of JSON data.'''
 
-  def __init__(self, parent, id_, content, due_date, priority, completed=False):
-    self.parent = parent
-    self.id = id_
-    self.content = content
-    self.due_date = due_date
-    self.priority = priority
-    self.completed = completed
+  parent: object
+  id: int
+  content: str
+  due_date: dt
+  priority: int
+  completed: bool
 
   def __str__(self):
     if self.completed:
