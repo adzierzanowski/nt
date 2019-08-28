@@ -95,6 +95,47 @@ class TodoList:
 
     return due
 
+  @staticmethod
+  def filter_overdue(items):
+    '''Returns overdue items from the provided list.'''
+
+    return [item for item in items if item.due_date is not None \
+      and item.due_date < dt.now()]
+
+  @staticmethod
+  def sort_by_priority(items):
+    '''Returns items from the provided list sorted by priority.'''
+
+    return sorted(items,
+      key=lambda m: 0 if m.priority is None else -m.priority)
+
+  @staticmethod
+  def sort_by_due_date(items):
+    '''Returns items from the provided list sorted by due date.'''
+
+    return sorted(items,
+      key=lambda m: dt(1900, 1, 1) if m.due_date is None else m.due_date,
+      reverse=True)
+
+  @staticmethod
+  def group_by_prefix(items, prefix):
+    '''Returns a dict of items grouped by prefix.'''
+
+    prefix_groups = {'no prefix': []}
+
+    for item in items:
+      prefixes = item.get_prefixes(prefix)
+      if prefixes:
+        for pref in prefixes:
+          if pref in prefix_groups:
+            prefix_groups[pref].append(item)
+          else:
+            prefix_groups[pref] = [item]
+      else:
+        prefix_groups['no prefix'].append(item)
+
+    return prefix_groups
+
   def get_item(self, id_):
     '''Returs a tuple (index, item) from list of items belonging to the list
     based on an item id. If the item is not found, it returns (-1, None).'''
@@ -160,79 +201,64 @@ class TodoList:
       return True
     return False
 
-  def list_items(
-    self,
-    priority=False,
-    due=False,
-    all_=False,
-    completed=False,
-    uncompleted=False,
-    args=None,
-    less=False,
-    by_prefix=None,
-    overdue=False):
+  def list_items(self, **kwargs):
     '''Lists items from the list.'''
 
     items = self.items
 
-    if priority:
-      items = sorted(items,
-        key=lambda m: 0 if m.priority is None else -m.priority)
+    if kwargs.get('priority', False):
+      items = TodoList.sort_by_priority(items)
 
-    if due:
-      items = sorted(items,
-      key=lambda m: dt(1900, 1, 1) if m.due_date is None else m.due_date,
-      reverse=True)
+    if kwargs.get('due', False):
+      items = TodoList.sort_by_due_date(items)
 
-    if not all_:
-      if completed:
+    if not kwargs.get('all_', False):
+      if kwargs.get('completed', False):
         items = [item for item in items if item.completed]
-      elif uncompleted:
+
+      elif kwargs.get('uncompleted', False):
         items = [item for item in items if not item.completed]
 
-    if overdue:
-      items = [item for item in items if item.due_date is not None \
-        and item.due_date < dt.now()]
+    if kwargs.get('overdue', False):
+      items = TodoList.filter_overdue(items)
 
-    for arg in args:
+    for arg in kwargs.get('args', None):
       items = [item for item in items if arg in item.content]
 
-    if by_prefix:
-      prefix_groups = {'no prefix': []}
+    pref = kwargs.get('by_prefix', None)
+    less = kwargs.get('less', False)
+    self.print_filtered_items(items, pref, less)
 
-      for item in items:
-        prefixes = item.get_prefixes(by_prefix)
-        if prefixes:
-          for prefix in prefixes:
-            if prefix in prefix_groups:
-              prefix_groups[prefix].append(item)
-            else:
-              prefix_groups[prefix] = [item]
-        else:
-          prefix_groups['no prefix'].append(item)
+  def print_filtered_items(self, items, pref=None, less=False):
+    '''Outputs filtered and sorted items by prefix (or not)
+    and pipe it to less (or not).'''
+
+    items_ = items
 
     out = ''
-    if by_prefix:
+    if pref:
+      prefix_groups = TodoList.group_by_prefix(items_, pref)
+
       try:
-        self.config.prefixes[by_prefix]
+        self.config.prefixes[pref]
       except KeyError:
         raise PrefixNotDefined
 
-      for group, items in prefix_groups.items():
+      for group, items_ in prefix_groups.items():
         if group == 'no prefix':
           prefix_name = ''
           group_name = '~none'
         else:
-          prefix_name = by_prefix
+          prefix_name = pref
           group_name = group
 
-        if items:
+        if items_:
           out += '{}: \033[38;5;{}m{}{}\033[0m\n'.format(
-            self.config.prefixes[by_prefix]['name'],
-            self.config.prefixes[by_prefix]['color'],
+            self.config.prefixes[pref]['name'],
+            self.config.prefixes[pref]['color'],
             prefix_name,
             group_name)
-          for item in items:
+          for item in items_:
             out += str(item) + '\n'
     else:
       for item in items:
@@ -245,8 +271,6 @@ class TodoList:
       os.remove(Glob.less_tmp_fname)
     else:
       print(out, end='')
-
-    return True
 
   def to_file(self, force=False):
     '''Saves the current state of the list to a file.'''
