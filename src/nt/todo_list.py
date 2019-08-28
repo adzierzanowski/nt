@@ -156,11 +156,12 @@ class TodoList:
     due = TodoList.parse_date(due_)
 
     item = TodoItem(
-      self,
-      self.max_id+1,
-      ' '.join(content_),
-      due,
-      priority_)
+      parent=self,
+      id=self.max_id+1,
+      content=' '.join(content_),
+      due_date=due,
+      priority=priority_,
+      completed=False)
     self.add_todo_item(item)
     self.to_file()
     print(item)
