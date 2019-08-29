@@ -163,7 +163,6 @@ class TodoList:
       priority=priority_,
       completed=False)
     self.add_todo_item(item)
-    self.to_file()
     print(item)
 
   def remove_item(self, id_):
@@ -186,7 +185,6 @@ class TodoList:
         if due_:
           due = TodoList.parse_date(due_)
           self.items[i].due_date = due
-        self.to_file()
         print(item)
         return True
     return False
@@ -197,7 +195,6 @@ class TodoList:
     i, item = self.get_item(id_)
     if item:
       self.items[i].completed = complete
-      self.to_file()
       print(item)
       return True
     return False

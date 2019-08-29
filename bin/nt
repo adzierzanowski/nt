@@ -114,6 +114,7 @@ def main():
   if args.cmd in ('a', 'add'):
     if args.content:
       todo_list.add_item(args.due, args.content, args.priority)
+      todo_list.to_file()
     else:
       edit_command('add')
     exit(0)
@@ -141,6 +142,7 @@ def main():
   if args.cmd in ('e', 'edit'):
     if any([args.content, args.due, args.priority]):
       if todo_list.edit_item(args.id, args.content, args.due, args.priority):
+        todo_list.to_file()
         exit(0)
       else:
         print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
@@ -155,6 +157,7 @@ def main():
           content += ' -d \'{}\''.format(item.due_date.strftime(glob.date_fmt))
 
         edit_command('edit', args=[str(args.id)], content=content)
+        todo_list.to_file()
 
       else:
         print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
@@ -204,6 +207,7 @@ def main():
   # cmd:complete
   if args.cmd in ('complete', 'c'):
     if todo_list.set_completeness(args.id, True):
+      todo_list.to_file()
       exit(0)
     else:
       print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
@@ -212,6 +216,7 @@ def main():
   # cmd:uncomplete
   if args.cmd in ('uncomplete', 'u'):
     if todo_list.set_completeness(args.id, False):
+      todo_list.to_file()
       exit(0)
     else:
       print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
