@@ -9,8 +9,8 @@ class TodoListTestWithoutItems(unittest.TestCase):
   def setUp(self):
     self.todo_list = TodoList()
 
-  def test_init_(self):
-    '''__init__()'''
+  # __init__()
+  def test_init(self):
 
     self.assertIsNotNone(self.todo_list)
     self.assertIsInstance(self.todo_list.config, TodoListConfig)
@@ -25,14 +25,9 @@ class TodoListTestWithItems(unittest.TestCase):
     self.todo_list.add_item(
       '18.01.21 12:00', '@context1 +project2 #tag2 goodbye', 8)
 
+  # init()
   def test_init(self):
-    '''init()'''
-
-    try:
-      self.todo_list.init()
-    except SystemExit:
-      pass
-
+    self.todo_list.init()
     self.assertTrue(os.path.exists('.todo.json'))
     os.remove('.todo.json')
 

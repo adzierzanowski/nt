@@ -100,8 +100,11 @@ def main():
     exit(0)
 
   if args.cmd == 'init':
-    TodoList.init()
-    exit(0)
+    if TodoList.init():
+      print('successfully created {}'.format(glob.list_fname))
+      exit(0)
+    else:
+      exit(1)
 
   todo_list = TodoList.from_file(glob.list_fname)
   if not todo_list:
@@ -143,6 +146,8 @@ def main():
   if args.cmd in ('e', 'edit'):
     if any([args.content, args.due, args.priority]):
       if todo_list.edit_item(args.id, args.content, args.due, args.priority):
+        _, item = todo_list.get_item(args.id)
+        print(item)
         todo_list.to_file()
         exit(0)
       else:

@@ -37,7 +37,7 @@ class TodoList:
 
     todo_list = TodoList()
     todo_list.to_file(force=True)
-    print('successfully created {}'.format(glob.list_fname))
+    return True
 
   @staticmethod
   def from_file(fname):
@@ -190,7 +190,6 @@ class TodoList:
         if due_:
           due = TodoList.parse_date(due_)
           self.items[i].due_date = due
-        print(item)
         return True
     return False
 
