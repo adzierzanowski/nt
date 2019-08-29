@@ -89,9 +89,8 @@ class TodoList:
       due = None
 
     if due:
-      now = dt.now()
       if due.year == 1900:
-        due = due.replace(year=now.year)
+        due = due.replace(year=dt.now().year)
 
     return due
 
@@ -145,13 +144,14 @@ class TodoList:
         return index, item
     return -1, None
 
-  def add_todo_item(self, item):
+  def add_todo_item(self, item:TodoItem):
     '''Appends a TodoItem to the list's item list.'''
 
     self.items.append(item)
 
-  def add_item(self, due_, content_, priority_):
-    '''Adds an item to the list based on certain parameters.'''
+  def add_item(self, due_:str, content_:str, priority_:int):
+    '''Adds an item to the list based on certain parameters.
+    Returns the item.'''
 
     due = TodoList.parse_date(due_)
 
@@ -163,7 +163,7 @@ class TodoList:
       priority=priority_,
       completed=False)
     self.add_todo_item(item)
-    print(item)
+    return item
 
   def remove_item(self, id_):
     '''Removes an item from the list based on its id.'''

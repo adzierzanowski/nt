@@ -113,8 +113,9 @@ def main():
   # cmd:add
   if args.cmd in ('a', 'add'):
     if args.content:
-      todo_list.add_item(args.due, args.content, args.priority)
+      item = todo_list.add_item(args.due, args.content, args.priority)
       todo_list.to_file()
+      print(item)
     else:
       edit_command('add')
     exit(0)
