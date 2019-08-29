@@ -93,10 +93,6 @@ Example of `.ntrc`:
 
     ~/.ntrc < .ntrc < .todo.json config dict
 
-## TODO
-
-See `.todo.json` ;)
-
 ## zsh completions
 
     compdef _gnu_generic nt
