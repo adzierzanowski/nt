@@ -1,5 +1,6 @@
 import os
 import unittest
+from datetime import datetime as dt
 
 from nt.todo_list import TodoList
 from nt.todo_list_config import TodoListConfig
@@ -28,7 +29,16 @@ class TodoListTest(unittest.TestCase):
     os.remove('.todo.json')
 
   def test_parse_date(self):
-    pass
+    self.assertEqual(TodoList.parse_date('mon').weekday(), 0)
+    self.assertEqual(TodoList.parse_date('Tue').weekday(), 1)
+    self.assertEqual(TodoList.parse_date('WED').weekday(), 2)
+    self.assertEqual(TodoList.parse_date('THu').weekday(), 3)
+    self.assertEqual(TodoList.parse_date('fRI').weekday(), 4)
+    self.assertEqual(TodoList.parse_date('sat').weekday(), 5)
+    self.assertEqual(TodoList.parse_date('Sun').weekday(), 6)
+
+    self.assertEqual(
+      TodoList.parse_date('22.06.20 18:19'), dt(2020, 6, 22, 18, 19))
 
   def test_group_by_prefix(self):
     pass
@@ -47,4 +57,3 @@ class TodoListTest(unittest.TestCase):
 
   def set_completness(self):
     pass
-

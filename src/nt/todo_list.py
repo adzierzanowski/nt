@@ -76,7 +76,7 @@ class TodoList:
           if due_.lower() in weekdays:
             timeptr = dt.now() + timedelta(days=1)
             while all([
-              timeptr.weekday() != weekdays.index(due_),
+              timeptr.weekday() != weekdays.index(due_.lower()),
               timeptr - dt.now() < timedelta(days=8)
             ]):
 
