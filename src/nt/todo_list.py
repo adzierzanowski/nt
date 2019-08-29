@@ -76,7 +76,7 @@ class TodoList:
           if due_.lower() in weekdays:
             timeptr = dt.now() + timedelta(days=1)
             while all([
-              timeptr.weekday() != weekdays.index(due_),
+              timeptr.weekday() != weekdays.index(due_.lower()),
               timeptr - dt.now() < timedelta(days=8)
             ]):
 
@@ -89,9 +89,8 @@ class TodoList:
       due = None
 
     if due:
-      now = dt.now()
       if due.year == 1900:
-        due = due.replace(year=now.year)
+        due = due.replace(year=dt.now().year)
 
     return due
 
@@ -145,32 +144,37 @@ class TodoList:
         return index, item
     return -1, None
 
-  def add_todo_item(self, item):
+  def add_todo_item(self, item: TodoItem):
     '''Appends a TodoItem to the list's item list.'''
 
     self.items.append(item)
 
-  def add_item(self, due_, content_, priority_):
-    '''Adds an item to the list based on certain parameters.'''
+  def add_item(self, due_: str, content_: str, priority_: int):
+    '''Adds an item to the list based on certain parameters.
+    Returns the item.'''
 
     due = TodoList.parse_date(due_)
+    self.max_id += 1
 
     item = TodoItem(
       parent=self,
-      id=self.max_id+1,
+      id=self.max_id,
       content=' '.join(content_),
       due_date=due,
       priority=priority_,
       completed=False)
     self.add_todo_item(item)
-    self.to_file()
-    print(item)
+    return item
 
   def remove_item(self, id_):
     '''Removes an item from the list based on its id.'''
     i, item = self.get_item(id_)
     if item:
       del self.items[i]
+
+      if id_ == self.max_id:
+        self.max_id = max([item.id for item in self.items])
+
       return True
     return False
 
@@ -186,7 +190,6 @@ class TodoList:
         if due_:
           due = TodoList.parse_date(due_)
           self.items[i].due_date = due
-        self.to_file()
         print(item)
         return True
     return False
@@ -197,8 +200,6 @@ class TodoList:
     i, item = self.get_item(id_)
     if item:
       self.items[i].completed = complete
-      self.to_file()
-      print(item)
       return True
     return False
 
