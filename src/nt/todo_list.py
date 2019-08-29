@@ -171,6 +171,10 @@ class TodoList:
     i, item = self.get_item(id_)
     if item:
       del self.items[i]
+
+      if id_ == self.max_id:
+        self.max_id = max([item.id for item in self.items])
+
       return True
     return False
 
@@ -196,7 +200,6 @@ class TodoList:
     i, item = self.get_item(id_)
     if item:
       self.items[i].completed = complete
-      print(item)
       return True
     return False
 

@@ -70,10 +70,34 @@ class TodoListTestWithItems(unittest.TestCase):
     self.assertEqual(self.todo_list.max_id, 3)
 
   def test_remove_item(self):
-    pass
+    _, item0 = self.todo_list.get_item(0)
+    _, item1 = self.todo_list.get_item(1)
+    _, item2 = self.todo_list.get_item(2)
+
+    self.todo_list.remove_item(0)
+    self.assertEqual(self.todo_list.max_id, 2)
+
+    self.todo_list.remove_item(2)
+    self.assertEqual(self.todo_list.max_id, 1)
+
+    self.assertNotIn(item0, self.todo_list.items)
+    self.assertIn(item1, self.todo_list.items)
+    self.assertNotIn(item2, self.todo_list.items)
+
+  def test_set_completness(self):
+    self.todo_list.set_completeness(0, False)
+    self.todo_list.set_completeness(1, True)
+
+    _, item0 = self.todo_list.get_item(0)
+    _, item1 = self.todo_list.get_item(1)
+
+    self.assertFalse(item0.completed)
+    self.assertTrue(item1.completed)
 
   def test_edit_item(self):
-    pass
+    self.todo_list.edit_item(0, 'barf', None, 1)
+    _, item = self.todo_list.get_item(0)
 
-  def set_completness(self):
-    pass
+    self.assertEqual(item.content, 'barf')
+    self.assertIsNotNone(item.due_date)
+    self.assertEqual(item.priority, 1)

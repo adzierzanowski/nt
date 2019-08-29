@@ -209,6 +209,8 @@ def main():
   if args.cmd in ('complete', 'c'):
     if todo_list.set_completeness(args.id, True):
       todo_list.to_file()
+      _, item = todo_list.get_item(args.id)
+      print(item)
       exit(0)
     else:
       print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
@@ -217,6 +219,8 @@ def main():
   # cmd:uncomplete
   if args.cmd in ('uncomplete', 'u'):
     if todo_list.set_completeness(args.id, False):
+      _, item = todo_list.get_item(args.id)
+      print(item)
       todo_list.to_file()
       exit(0)
     else:
