@@ -144,12 +144,12 @@ class TodoList:
         return index, item
     return -1, None
 
-  def add_todo_item(self, item:TodoItem):
+  def add_todo_item(self, item: TodoItem):
     '''Appends a TodoItem to the list's item list.'''
 
     self.items.append(item)
 
-  def add_item(self, due_:str, content_:str, priority_:int):
+  def add_item(self, due_: str, content_: str, priority_: int):
     '''Adds an item to the list based on certain parameters.
     Returns the item.'''
 
