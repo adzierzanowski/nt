@@ -2,7 +2,7 @@
 
 import unittest
 
-from tests import todo_item, todo_list_config
+from tests import todo_item, todo_list_config, todo_list
 
 if __name__ == '__main__':
   loader = unittest.TestLoader()
@@ -10,6 +10,7 @@ if __name__ == '__main__':
   suite.addTests([
     loader.loadTestsFromModule(todo_item),
     loader.loadTestsFromModule(todo_list_config),
+    loader.loadTestsFromModule(todo_list)
   ])
 
   runner = unittest.TextTestRunner(verbosity=3)
