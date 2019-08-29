@@ -173,7 +173,7 @@ class TodoList:
       del self.items[i]
 
       if id_ == self.max_id:
-        self.max_id = max([item.id for item in self.items])
+        self.max_id = max([-1] + [item.id for item in self.items])
 
       return True
     return False

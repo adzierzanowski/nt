@@ -27,9 +27,16 @@ class TodoListTestWithItems(unittest.TestCase):
 
   # init()
   def test_init(self):
+    test_dir = '__tmp_nt_test__'
+    os.mkdir(test_dir)
+    os.chdir(test_dir)
+
     self.todo_list.init()
     self.assertTrue(os.path.exists('.todo.json'))
+
     os.remove('.todo.json')
+    os.chdir('..')
+    os.rmdir(test_dir)
 
   def test_parse_date(self):
     self.assertEqual(TodoList.parse_date('mon').weekday(), 0)
@@ -78,6 +85,10 @@ class TodoListTestWithItems(unittest.TestCase):
     self.assertNotIn(item0, self.todo_list.items)
     self.assertIn(item1, self.todo_list.items)
     self.assertNotIn(item2, self.todo_list.items)
+
+    self.todo_list.remove_item(1)
+    self.assertEqual(self.todo_list.items, [])
+    self.assertEqual(self.todo_list.max_id, -1)
 
   def test_set_completness(self):
     self.todo_list.set_completeness(0, False)
