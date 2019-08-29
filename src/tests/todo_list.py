@@ -54,13 +54,20 @@ class TodoListTestWithItems(unittest.TestCase):
     pass
 
   def test_get_item(self):
-    index, item = self.todo_list.get_item(0)
+    _, item = self.todo_list.get_item(0)
 
     self.assertIsNotNone(item)
     self.assertEqual(item.id, 0)
 
+    index, item = self.todo_list.get_item(100)
+    self.assertIsNone(item)
+    self.assertEqual(index, -1)
+
   def test_add_item(self):
-    pass
+    item = self.todo_list.add_item('sat', 'content', None)
+    self.assertIsNotNone(item)
+    self.assertIn(item, self.todo_list.items)
+    self.assertEqual(self.todo_list.max_id, 3)
 
   def test_remove_item(self):
     pass

@@ -154,10 +154,11 @@ class TodoList:
     Returns the item.'''
 
     due = TodoList.parse_date(due_)
+    self.max_id += 1
 
     item = TodoItem(
       parent=self,
-      id=self.max_id+1,
+      id=self.max_id,
       content=' '.join(content_),
       due_date=due,
       priority=priority_,
