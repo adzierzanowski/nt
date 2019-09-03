@@ -16,6 +16,10 @@ class PrefixNotDefined(Exception):
   '''Exception raised when there's an attempt to use a prefix that was not
   defined.'''
 
+class NoMatchingItems(Exception):
+  '''Exception raised when there's an attempt to perform an invalid operation
+  on an empty list of items.'''
+
 class TodoList:
   '''TodoList represents, wait for it... a todo list.'''
 
@@ -234,6 +238,9 @@ class TodoList:
     '''Outputs filtered and sorted items by prefix (or not)
     and pipe it to less (or not).'''
 
+    if not items:
+      raise NoMatchingItems
+
     items_ = items
 
     out = ''
@@ -280,7 +287,7 @@ class TodoList:
       with open(glob.list_fname, 'w') as f:
         f.write(self.to_json())
     else:
-      print('{} not found'.format(glob.list_fname))
+      print('{} not found'.format(glob.list_fname), file=sys.stderr)
       print('init list with `nt init`')
 
   def to_json(self):

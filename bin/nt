@@ -7,7 +7,7 @@ import subprocess
 
 from nt import glob
 from nt.fmt import Fmt
-from nt.todo_list import TodoList, PrefixNotDefined
+from nt.todo_list import TodoList, PrefixNotDefined, NoMatchingItems 
 from nt.argparser import parse_args
 from nt.meta import __progname__, __version__
 
@@ -147,8 +147,8 @@ def main():
     if any([args.content, args.due, args.priority]):
       if todo_list.edit_item(args.id, args.content, args.due, args.priority):
         _, item = todo_list.get_item(args.id)
-        print(item)
         todo_list.to_file()
+        print(item)
         exit(0)
       else:
         print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
@@ -163,7 +163,6 @@ def main():
           content += ' -d \'{}\''.format(item.due_date.strftime(glob.date_fmt))
 
         edit_command('edit', args=[str(args.id)], content=content)
-        todo_list.to_file()
 
       else:
         print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
@@ -187,6 +186,10 @@ def main():
     except PrefixNotDefined:
       print('{}prefix {} was not defined{}'.format(
         Fmt.fg(1), args.by_prefix, Fmt.end()), file=sys.stderr)
+    except NoMatchingItems:
+      print('{}no matching items{}'.format(
+        Fmt.fg(1), Fmt.end()), file=sys.stderr)
+      exit(1)
 
     exit(0)
 
