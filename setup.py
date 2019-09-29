@@ -4,7 +4,7 @@ $ pip3 install . [--upgrade]
 '''
 
 from setuptools import setup
-from src.nt.meta import __version__, __progname__
+from nt.meta import __version__, __progname__
 
 with open('README.md', 'r') as f:
   long_desc = f.read()
@@ -20,14 +20,17 @@ setup(
   author_email='a.dzierzanowski1@gmail.com',
   license='MIT',
   packages=['nt'],
-  package_dir={'': 'src'},
   include_package_data=True,
   install_requires=['afmt'],
-  scripts=['bin/nt'],
   zip_safe=False,
   python_requires='>=3.6',
+  entry_points={
+    'console_scripts': [
+      'nt = nt.__main__:main'
+    ]
+  },
   classifiers=[
-    'Development Status :: 5 - Production/Stable',
+    'Development Status :: 4 - Beta',
     'Environment :: Console',
     'Intended Audience :: End Users/Desktop',
     'License :: OSI Approved :: MIT License',

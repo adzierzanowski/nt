@@ -5,11 +5,11 @@ import sys
 import shlex
 import subprocess
 
-from nt import glob
-from nt.glob import f 
-from nt.todo_list import TodoList, PrefixNotDefined, NoMatchingItems 
-from nt.argparser import parse_args
-from nt.meta import __progname__, __version__
+from . import glob
+from .glob import f
+from .todo_list import TodoList, PrefixNotDefined, NoMatchingItems
+from .argparser import parse_args
+from .meta import __progname__, __version__
 
 def edit_command(cmd, args=None, content=''):
   def abort_with_msg(msg):
@@ -50,9 +50,9 @@ def parse_rcfile():
   else:
     return
 
-  with open(rcfname, 'r') as f:
-    data = f.read()
-  
+  with open(rcfname, 'r') as fh:
+    data = fh.read()
+
   data = data.splitlines()
   date_fmt_cnt = 0
   for line in data:
@@ -77,7 +77,7 @@ def parse_rcfile():
     elif l[0] == 'default_less_pipe':
       if l[1].lower() == 'true':
         glob.default_less_pipe = True
-    
+
     elif l[0] == 'date_fmt':
       date_fmt_cnt += 1
       if date_fmt_cnt == 1:
@@ -111,7 +111,7 @@ def main():
     print(f'{f:error}{glob.list_fname} not found{f:e}', file=sys.stderr)
     print('init first with `{} init`'.format(__progname__), file=sys.stderr)
     exit(1)
-    
+
   # cmd:add
   if args.cmd in ('a', 'add'):
     if args.content:
@@ -154,7 +154,7 @@ def main():
         print(f'{f:error}no such item{f:e}', file=sys.stderr)
         exit(1)
     else:
-      i, item = todo_list.get_item(args.id)
+      _, item = todo_list.get_item(args.id)
       if item:
         content = '-c \'{}\''.format(item.content)
         if item.priority:
