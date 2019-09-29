@@ -3,3 +3,4 @@ __pycache__
 .todo.json
 dist
 build
+*.egg-info
