@@ -4,4 +4,4 @@ python:
 install:
   - pip3 install . 
 script:
-  - src/test.py
+  - nt/test.py
