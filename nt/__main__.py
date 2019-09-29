@@ -5,15 +5,15 @@ import sys
 import shlex
 import subprocess
 
-from nt import glob
-from nt.fmt import Fmt
-from nt.todo_list import TodoList, PrefixNotDefined, NoMatchingItems 
-from nt.argparser import parse_args
-from nt.meta import __progname__, __version__
+from . import glob
+from .glob import f
+from .todo_list import TodoList, PrefixNotDefined, NoMatchingItems
+from .argparser import parse_args
+from .meta import __progname__, __version__
 
 def edit_command(cmd, args=None, content=''):
   def abort_with_msg(msg):
-    print('{}{}{}'.format(Fmt.fg(1), msg, Fmt.end()), file=sys.stderr)
+    print(f'{f:error}{msg}{f:e}', file=sys.stderr)
     os.remove(glob.command_tmp_fname)
     exit(1)
 
@@ -50,9 +50,9 @@ def parse_rcfile():
   else:
     return
 
-  with open(rcfname, 'r') as f:
-    data = f.read()
-  
+  with open(rcfname, 'r') as fh:
+    data = fh.read()
+
   data = data.splitlines()
   date_fmt_cnt = 0
   for line in data:
@@ -77,7 +77,7 @@ def parse_rcfile():
     elif l[0] == 'default_less_pipe':
       if l[1].lower() == 'true':
         glob.default_less_pipe = True
-    
+
     elif l[0] == 'date_fmt':
       date_fmt_cnt += 1
       if date_fmt_cnt == 1:
@@ -101,18 +101,17 @@ def main():
 
   if args.cmd == 'init':
     if TodoList.init():
-      print('successfully created {}'.format(glob.list_fname))
+      print(f'{f:success}successfully created {glob.list_fname}{f:e}')
       exit(0)
     else:
       exit(1)
 
   todo_list = TodoList.from_file(glob.list_fname)
   if not todo_list:
-    print('{}{} not found{}'.format(
-      Fmt.fg(1), glob.list_fname, Fmt.end()), file=sys.stderr)
+    print(f'{f:error}{glob.list_fname} not found{f:e}', file=sys.stderr)
     print('init first with `{} init`'.format(__progname__), file=sys.stderr)
     exit(1)
-    
+
   # cmd:add
   if args.cmd in ('a', 'add'):
     if args.content:
@@ -127,8 +126,9 @@ def main():
   if args.cmd in ('cfg', 'config'):
     if args.add_prefix:
       if any([not args.name, not args.color]):
-        print('{}-n and -c switches are required when adding a prefix{}'.format(
-          Fmt.fg(1), Fmt.end()), file=sys.stderr)
+        print(
+          '{f:error}-n and -c switches are required when adding a prefix{f:e}',
+          file=sys.stderr)
         exit(1)
       todo_list.config.add_prefix(args.add_prefix, args.name, args.color)
       todo_list.to_file()
@@ -151,10 +151,10 @@ def main():
         print(item)
         exit(0)
       else:
-        print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
+        print(f'{f:error}no such item{f:e}', file=sys.stderr)
         exit(1)
     else:
-      i, item = todo_list.get_item(args.id)
+      _, item = todo_list.get_item(args.id)
       if item:
         content = '-c \'{}\''.format(item.content)
         if item.priority:
@@ -165,7 +165,7 @@ def main():
         edit_command('edit', args=[str(args.id)], content=content)
 
       else:
-        print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
+        print(f'{f:error}no such item{f:e}', file=sys.stderr)
         exit(1)
     exit(0)
 
@@ -184,11 +184,10 @@ def main():
         overdue=args.overdue
       )
     except PrefixNotDefined:
-      print('{}prefix {} was not defined{}'.format(
-        Fmt.fg(1), args.by_prefix, Fmt.end()), file=sys.stderr)
+      print(f'{f:error}prefix {args.by_prefix} was not defined{f:e}',
+        file=sys.stderr)
     except NoMatchingItems:
-      print('{}no matching items{}'.format(
-        Fmt.fg(1), Fmt.end()), file=sys.stderr)
+      print(f'{f:error}no matching items{f:e}', file=sys.stderr)
       exit(1)
 
     exit(0)
@@ -200,17 +199,17 @@ def main():
       yesno = input()
       if yesno in ['y', 'Y']:
         os.remove(glob.list_fname)
-        print('{}successfully removed the list{}'.format(Fmt.fg(2), Fmt.end()))
+        print(f'{f:success}successfully removed the list{f:e}')
         exit(0)
       else:
         exit(0)
     else:
       if todo_list.remove_item(int(args.id)):
         todo_list.to_file()
-        print('{}item removed{}'.format(Fmt.fg(2), Fmt.end()))
+        print(f'{f:success}item removed{f:e}')
         exit(0)
       else:
-        print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
+        print(f'{f:error}no such item{f:e}', file=sys.stderr)
         exit(1)
 
   # cmd:complete
@@ -221,7 +220,7 @@ def main():
       print(item)
       exit(0)
     else:
-      print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
+      print(f'{f:error}no such item{f:e}', file=sys.stderr)
       exit(1)
 
   # cmd:uncomplete
@@ -232,7 +231,7 @@ def main():
       todo_list.to_file()
       exit(0)
     else:
-      print('{}no such item{}'.format(Fmt.fg(1), Fmt.end()), file=sys.stderr)
+      print(f'{f:error}no such item{f:e}', file=sys.stderr)
       exit(1)
 
 if __name__ == '__main__':

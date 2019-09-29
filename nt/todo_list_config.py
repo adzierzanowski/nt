@@ -1,7 +1,7 @@
 '''This module handles per-list configuration.'''
 
-from .fmt import Fmt
 from . import glob
+from .glob import f
 
 class TodoListConfig:
   '''TodoListConfig defines configuration of the TodoList.'''
@@ -66,11 +66,8 @@ class TodoListConfig:
 
     print('List of defined prefixes:')
     for prefix, prefix_data in self.prefixes.items():
-      print('    {}{}{}{}'.format(
-        Fmt.fg(prefix_data['color']),
-        prefix,
-        prefix_data['name'],
-        Fmt.end()))
+      color = prefix_data['color']
+      print(f'{f:fg({color})}{prefix}{prefix_data}{f:e}')
 
     print()
     for key in TodoListConfig.keys:
