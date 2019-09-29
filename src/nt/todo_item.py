@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime as dt
 
 from . import glob
-from .fmt import Fmt
+from .glob import f
 
 @dataclass
 class TodoItem:
@@ -27,32 +27,26 @@ class TodoItem:
       due = ''
     else:
       if dt.now() < self.due_date:
-        due = 'due: {}'.format(Fmt.fg(2))
+        fmt = 'due'
       else:
-        due = 'due: {}'.format(Fmt.fg(1))
-      due += self.due_date.strftime(glob.date_fmt)
-      due += Fmt.end()
+        fmt = 'overdue'
+      due = f'{f:{fmt}}{self.due_date.strftime(glob.date_fmt)}{f:e}'
 
-    if self.priority is None:
-      priority = Fmt.fg(3) + Fmt.end()
-    else:
-      priority = 'priority: {}'.format(Fmt.fg(3))
-      priority += str(self.priority)
-      priority += Fmt.end()
+    p = '' if self.priority is None else self.priority
+    priority = f'{f:priority}{p}{f:e}'
 
     content = self.content.split(' ')
     for i, word in enumerate(content):
       for prefix, prefix_data in self.parent.config.prefixes.items():
         if word.startswith(prefix):
-          content[i] = Fmt.fg(prefix_data['color'])
-          content[i] += word
-          content[i] += Fmt.end()
+          color = prefix_data['color']
+          content[i] = f'{f:fg({color})}{word}{f:e}'
           continue
+    content = ' '.join(content)
 
-    content = '{}{}{}'.format(Fmt.end(), ' '.join(content), Fmt.end())
-
-    return '{}{:4}{} {}    {:30}    {:20}\n     {}\n'.format(
-      Fmt.fg(4), self.id, Fmt.end(), completed, priority, due, content)
+    out = f'{f:index}{self.id:4}{f:e}    {completed:30}    {priority}\n'
+    out += f'    {content}\n'
+    return out
 
   @staticmethod
   def from_dict(parent, data):
